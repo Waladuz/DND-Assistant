@@ -460,7 +460,7 @@ class CharacterWindow:
         self.portrait_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
         # LoadImage
-        image_path = r"C:\Users\nmoeller\PycharmProjects\RPG-Viewer\images\002.png"
+        image_path = r"images\002.png"
         image = Image.open(image_path).resize((200, 200))
 
         if other_root is None:
