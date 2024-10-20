@@ -48,6 +48,7 @@ class BattleScreenManager:
         self.entry_interval = None
         self.entry_map_name = None
         self.entry_map_id = None
+        self.entry_map_money = None
 
         self.new_enemy = None
         self.list_of_enemies = []
@@ -566,7 +567,7 @@ class BattleScreenManager:
 
     def save_map_to_db(self):
         map_entity = Map([self.entry_map_id.get(), self.map_image_combobox.get(),
-                          self.entry_map_name.get(), self.interval])
+                          self.entry_map_name.get(), self.interval, int(self.entry_map_money.get())])
         map_entity.set_enemy_list(self.list_of_enemies)
         map_entity.loot_list = self.loot_list
         map_entity.save_to_db()
@@ -624,6 +625,9 @@ class BattleScreenManager:
         self.entry_interval.delete(0, tk.END)
         self.entry_interval.insert(0, self.interval)
         self.read_new_interval()
+
+        self.entry_map_money.delete(0, tk.END)
+        self.entry_map_money.insert(0, self.current_map.money_loot)
 
         self.entry_map_name.delete(0, tk.END)
         self.entry_map_name.insert(0, self.current_map.map_name)
@@ -958,6 +962,12 @@ class BattleScreenManager:
 
         self.entry_map_name = ttk.Entry(self.action_frame)
         self.entry_map_name.grid(row=3, column=1, sticky="w")
+
+        label = ttk.Label(self.action_frame, text="Completion Money", padding=(10, 5))
+        label.grid(row=4, column=0, sticky="e")
+
+        self.entry_map_money = ttk.Entry(self.action_frame)
+        self.entry_map_money.grid(row=4, column=1, sticky="w")
 
         self.info_frame = ttk.LabelFrame(self.action_frame, text="Info", padding=(10, 5))
         self.info_frame.grid(row=7, column=0, padx=10, pady=10, sticky="nsew", columnspan=3)
