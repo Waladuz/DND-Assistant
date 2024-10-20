@@ -78,6 +78,8 @@ class Character:
         self.Battle_HP = self.data[50]
         self.Battle_HP_Max = self.data[51]
 
+        self.Money = self.data[53]
+
         self.Inventory = {}
         self.Equipment_Weapons = []
         self.Equipment_Armors = []
@@ -94,7 +96,7 @@ class Character:
         self.Bases_Array = [
             self.ID, self.Base_Name, self.Base_Race, self.Base_Class,
             self.Base_Level, self.Base_Exp, self.Base_Alignment, self.Base_PlayerName, self.Battle_HP_Max,
-            self.Base_Initiative, self.Base_Speed, self.Base_AC
+            self.Base_Initiative, self.Base_Speed, self.Base_AC, self.Money
         ]
         self.Attributes_Array = [
             self.Attribute_Strength,
@@ -184,6 +186,7 @@ class Character:
         self.Base_Initiative = int(new_base_array[9])
         self.Base_Speed = int(new_base_array[10])
         self.Base_AC = int(new_base_array[11])
+        self.Money = int(new_base_array[12])
 
         self.Attribute_Strength = int(new_attributes_array[0])
         self.Attribute_Dexterity = int(new_attributes_array[1])
@@ -227,7 +230,8 @@ class Character:
             "Max HP": self.Battle_HP_Max,
             "Initiative": self.Base_Initiative,
             "Speed": self.Base_Speed,
-            "AC": self.Base_AC
+            "AC": self.Base_AC,
+            "Money": self.Money
         }
 
         self.Attributes_Dictionary = {
@@ -439,6 +443,9 @@ class Character:
         self.Battle_HP = min([max([self.Battle_HP, 0]), self.Battle_HP_Max])
 
     def get_hp_as_text(self):
+        if self.Battle_HP == 0:
+            return "DEAD"
+
         return f"{self.Battle_HP}/{self.Battle_HP_Max}"
 
     @staticmethod
@@ -732,6 +739,9 @@ class Enemy:
             return None
 
     def get_hp_as_text(self):
+        if self.Temp_HP == 0:
+            return "DEAD"
+
         return f"{self.Temp_HP}/{self.Temp_HP_Max}"
 
     def deal_damage(self, amount):

@@ -4,7 +4,10 @@ import glob
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from DataManagers import cm_shared, em_shared, Map, mm_shared
+
+import character_overview
+import enemy_creation
+from DataManagers import em_shared, Map, mm_shared, cm_shared
 from PIL import Image, ImageTk
 from tktooltip import ToolTip
 from OnDemandWindows import window_manager
@@ -12,10 +15,12 @@ from character_overview import party_menu
 from battle_manager import BattleManager
 from character import Character, Enemy
 from shared_data import get_attribute_modifier
+from item import item_database
 
 
 class BattleScreenManager:
     def __init__(self):
+        self.main_window = None
         self.menu = None
         self.current_map = None
         self.map_image = None
@@ -23,11 +28,15 @@ class BattleScreenManager:
         self.enemy_addition_window = None
         self.battle_screen_initiative_window = None
         self.combat_window = None
+        self.add_loot_window = None
+        self.split_loot_window = None
 
         self.map_frame = None
         self.info_frame = None
         self.action_frame = None
+        self.loot_split_frame = None
 
+        self.item_loot_list = None
         self.enemy_list = None
         self.enemy_entry_fields = []
 
@@ -60,6 +69,8 @@ class BattleScreenManager:
         self.entries_entity_info = []
         self.entries_battle_initiatives = []
         self.battle_portraits = []
+
+        self.loot_list = []
 
     def start_battle(self):
         if len(self.list_of_enemies) == 0:
@@ -113,7 +124,7 @@ class BattleScreenManager:
                                            command=self.open_initiative_roll_map)
         set_initiative_button.grid(row=0, column=0, sticky="ew", columnspan=3)
 
-        battle_status_frame = ttk.LabelFrame(self.battle_info_frame, text="Actions", padding=(10, 10))
+        battle_status_frame = ttk.LabelFrame(self.battle_info_frame, text="Battle State", padding=(10, 10))
         battle_status_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
         battle_status_label = ttk.Label(battle_status_frame, text="Status:")
@@ -121,6 +132,12 @@ class BattleScreenManager:
 
         self.battle_status_label = ttk.Label(battle_status_frame, text="Status:")
         self.battle_status_label.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
+        end_battle_frame = ttk.LabelFrame(self.battle_info_frame, text="End Battle", padding=(10, 10))
+        end_battle_frame.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
+
+        button_split_loot = ttk.Button(end_battle_frame, text="Split Loot", command=self.open_loot_split_window)
+        button_split_loot.pack(fill='both', expand=True)
 
         self.load_selected_entity_info()
         self.refresh_battle_status()
@@ -194,6 +211,10 @@ class BattleScreenManager:
             grid_x + grid_size, grid_y + grid_size,
             outline="yellow", width=3
         )
+
+    def open_enemy_details(self, other_entity):
+        enemy_creation.enemy_creator.current_enemy = other_entity
+        enemy_creation.enemy_creator.open_enemy_creation_window(self.main_window, True)
 
     def open_combat_window(self, other_entity):
         if self.combat_window is not None:
@@ -353,8 +374,6 @@ class BattleScreenManager:
 
         found_entity = None
 
-        print("Sus")
-
         for entity in (self.battle_manager.player_list + self.battle_manager.enemy_list):
             if entity.Temp_Coordinate == coord:
                 found_entity = entity
@@ -363,7 +382,7 @@ class BattleScreenManager:
         if found_entity != self.battle_manager.current_selected_entity:
             self.menu.add_command(label="Engage in Combat", command=lambda: self.open_combat_window(found_entity))
         if type(found_entity) == Enemy:
-            self.menu.add_command(label="See Enemy Details")
+            self.menu.add_command(label="See Enemy Details", command=lambda: self.open_enemy_details(found_entity))
         self.menu.post(event.x_root, event.y_root)
 
     def on_left_click(self, event):
@@ -549,6 +568,7 @@ class BattleScreenManager:
         map_entity = Map([self.entry_map_id.get(), self.map_image_combobox.get(),
                           self.entry_map_name.get(), self.interval])
         map_entity.set_enemy_list(self.list_of_enemies)
+        map_entity.loot_list = self.loot_list
         map_entity.save_to_db()
         mm_shared.reload_all_maps_from_db()
         self.map_selection_combobox.set(f"{self.entry_map_id.get()} - {self.entry_map_name.get()}")
@@ -597,6 +617,8 @@ class BattleScreenManager:
 
         self.list_of_enemies = self.current_map.enemy_list
         self.refresh_enemy_list()
+        self.loot_list = self.current_map.loot_list
+        self.load_loot_list()
 
         self.interval = self.current_map.grid_interval
         self.entry_interval.delete(0, tk.END)
@@ -689,6 +711,188 @@ class BattleScreenManager:
             entry.grid(row=i, column=2, padx=5, pady=0, sticky="w")
             i += 1
 
+    def open_add_loot_window(self):
+        def add_item_to_list():
+            item_id = int(item_selection_combobox.get().split()[0])
+            self.loot_list.append(item_id)
+            self.load_loot_list()
+
+        if self.add_loot_window is not None:
+            if self.add_loot_window.winfo_exists():
+                return
+
+        self.refresh_battle_status()
+        self.add_loot_window = tk.Toplevel(self.main_battle_window)
+        self.add_loot_window.title("Add Loot")
+
+        window_manager.position_window(self.main_battle_window, self.add_loot_window)
+
+        item_dict = item_database.Item_Dictionary
+
+        items_list_values = []
+
+        for item_id, item in item_dict.items():
+            items_list_values.append(f"{item_id} {item.Item_Name}")
+
+        item_selection_combobox = ttk.Combobox(self.add_loot_window, values=items_list_values, state="readonly")
+        item_selection_combobox.pack(padx=10, pady=10)
+
+        add_button = ttk.Button(self.add_loot_window, text="Add", command=add_item_to_list)
+        add_button.pack()
+
+        remove_button = ttk.Button(self.add_loot_window, text="Close", command=self.add_loot_window.destroy)
+        remove_button.pack()
+
+    def remove_selected_loot_item(self):
+        selected_item = self.item_loot_list.selection()
+        if selected_item:
+            item = self.item_loot_list.item(selected_item)
+            item_id = item["values"][0]
+            self.loot_list.remove(item_id)
+            self.load_loot_list()
+
+    def load_loot_list(self):
+        if self.item_loot_list.winfo_exists():
+            for item in self.item_loot_list.get_children():
+                self.item_loot_list.delete(item)
+
+        new_list = []
+
+        for item_id in self.loot_list:
+            print(item_id)
+            new_list.append([item_id, item_database.get_item_from_id_in_table(item_id).Item_Name])
+
+        for loot in new_list:
+            entries = (loot[0], loot[1])
+            list_item = self.item_loot_list.insert("", "end", values=entries)
+
+    def open_loot_split_window(self):
+        def recalculate_sum(event):
+            print("here")
+
+            remainder = total_money
+            for entry in money_entry_fields:
+                remainder -= int(entry.get())
+            sum_label.config(text=f"Total remaining: {remainder}")
+
+        if self.split_loot_window is not None:
+            if self.split_loot_window.winfo_exists():
+                return
+
+        self.refresh_battle_status()
+        self.split_loot_window = tk.Toplevel(self.main_battle_window)
+        self.split_loot_window.title("Split Loot")
+
+        window_manager.position_window(self.main_battle_window, self.split_loot_window)
+
+        character_values = ["None"]
+        chara_xp = [0]
+
+        for chara_id, chara in cm_shared.Character_From_ID_Dictionary.items():
+            character_values.append(f"{chara_id} {chara.Base_Name}")
+            chara_xp.append(chara.Base_Exp)
+
+        xp_statistic_frame = ttk.LabelFrame(self.split_loot_window, text="Experience Points", padding=(10, 10))
+        xp_statistic_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
+        total_xp = sum(int(enemy.XP_On_Defeat) for enemy in self.current_map.enemy_list)
+        split_xp = total_xp // (len(character_values) - 1)
+
+        label_total_xp = ttk.Label(xp_statistic_frame, text=f"Total XP = {total_xp} ({split_xp} per player)",
+                                   font=("Helvetica", 10, "bold"))
+        label_total_xp.grid(row=0, column=0, columnspan=4)
+
+        for i, chara in enumerate(character_values):
+            if chara == "None":
+                continue
+
+            name = chara
+
+            label_xp_name = ttk.Label(xp_statistic_frame, text=f"{name}", width= 15)
+            label_xp_name.grid(row=i, column=0, columnspan=1)
+
+            label_current_xp = ttk.Label(xp_statistic_frame, text=f"{chara_xp[i]}", width= 15)
+            label_current_xp.grid(row=i, column=1, columnspan=1)
+
+            label_arrow_xp = ttk.Label(xp_statistic_frame, text=f"→", width= 15)
+            label_arrow_xp.grid(row=i, column=2, columnspan=1)
+
+            label_current_xp = ttk.Label(xp_statistic_frame, text=f"{chara_xp[i] + split_xp}", width= 15)
+            label_current_xp.grid(row=i, column=3, columnspan=1)
+
+        self.loot_split_frame = ttk.LabelFrame(self.split_loot_window, text="Loot List", padding=(10, 10))
+        self.loot_split_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+
+        label_charabox_list = []
+
+        for i, item_id in enumerate(self.loot_list):
+            item = item_database.get_item_from_id_in_table(item_id)
+            all_details = f"Type: {item.Item_Type}" \
+                          f"\nWeight: {item.Item_Weight}" \
+                          f"\nValue: {item.Item_Value}"
+
+            label = ttk.Label(self.loot_split_frame, text=f"{item_id} {item.Item_Name}", width=30)
+            ToolTip(label, all_details, delay=.2)
+            label.grid(row=i, column=0, sticky="e")
+
+            chara_combobox = ttk.Combobox(self.loot_split_frame, values=character_values, state="readonly")
+            chara_combobox.grid(row=i, column=1)
+            chara_combobox.current(0)
+
+            label_charabox_list.append([label, chara_combobox])
+
+        money_frame = ttk.LabelFrame(self.split_loot_window, text="Money", padding=(10, 10))
+        money_frame.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
+
+        total_money = self.current_map.money_loot
+
+        sum_label = ttk.Label(money_frame, text=f"Total remaining: {total_money}", state="readonly")
+        sum_label.grid(row=0, column=1)
+
+        money_entry_fields = []
+        money_label_entry_list = []
+
+        for i, chara in enumerate(character_values, start=0):
+            if chara == "None":
+                continue
+
+            chara_label = ttk.Label(money_frame, text=chara, state="readonly", width=15)
+            chara_label.grid(row=i, column=0, sticky="w")
+
+            entry_money_amount = ttk.Entry(money_frame)
+            entry_money_amount.insert(0, 0)
+            entry_money_amount.grid(row=i, column=1)
+
+            money_entry_fields.append(entry_money_amount)
+
+            entry_money_amount.bind("<Return>", lambda event: recalculate_sum(event))
+            money_label_entry_list.append([entry_money_amount, chara_label])
+
+        actions_frame = ttk.LabelFrame(self.split_loot_window, text="Actions", padding=(10, 10))
+        actions_frame.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
+
+        confirm_button = ttk.Button(actions_frame, text="Confirm",
+                                    command=lambda: self.settle_loot_split(label_charabox_list, money_label_entry_list,
+                                                                           split_xp))
+        confirm_button.pack(fill="both", expand=True)
+
+    def settle_loot_split(self, item_list, money_list, split_xp):
+        for money in money_list:
+            chara = cm_shared.Character_From_ID_Dictionary[int(money[1].cget("text").split()[0])]
+            chara.Money += int(money[0].get())
+
+        for item in item_list:
+            if item[1].get() == "None":
+                continue
+            chara = cm_shared.Character_From_ID_Dictionary[int(item[1].get().split()[0])]
+            chara.add_item(int(item[0].cget("text").split()[0]), 1)
+
+        for chara_id, chara in cm_shared.Character_From_ID_Dictionary.items():
+            chara.Base_Exp += int(split_xp)
+
+        self.split_loot_window.destroy()
+        character_overview.party_menu.create_party_elements()
+
     def open_battle_map(self, main_window):
         if self.main_battle_window is not None:
             if self.main_battle_window.winfo_exists():
@@ -763,7 +967,6 @@ class BattleScreenManager:
 
         columns = ("ID", "Name", "Creature", "HP")
 
-        # Create the first list (Treeview) with 6 columns
         self.enemy_list = ttk.Treeview(battle_frame, columns=columns, show="headings", height=5,
                                        style="Custom.Treeview")
         self.enemy_list.grid(row=0, column=0, sticky="nswe")
@@ -787,6 +990,32 @@ class BattleScreenManager:
                                          command=self.remove_enemy_at_index)
         button_remove_enemy.grid(row=2, column=0)
 
+        columns = ("ID", "Item Name")
+
+        self.item_loot_list = ttk.Treeview(battle_frame, columns=columns, show="headings", height=5,
+                                       style="Custom.Treeview")
+        self.item_loot_list.grid(row=3, column=0, sticky="nswe")
+
+        scrollbar = ttk.Scrollbar(battle_frame, orient="vertical", command=self.item_loot_list.yview)
+        self.item_loot_list.configure(yscrollcommand=scrollbar.set)
+        scrollbar.grid(row=3, column=1, sticky="ns")
+
+        for col in columns:
+            if col == "Item Name":
+                width = 120
+            else:
+                width = 50
+            self.item_loot_list.heading(col, text=col)
+            self.item_loot_list.column(col, width=width, anchor="center")
+
+        button_add_item = ttk.Button(battle_frame, text="Add Item", padding=(5, 5), width=15,
+                                      command=self.open_add_loot_window)
+        button_add_item.grid(row=4, column=0)
+
+        button_remove_item = ttk.Button(battle_frame, text="Remove Item", padding=(5, 5), width=15,
+                                         command=self.remove_selected_loot_item)
+        button_remove_item.grid(row=5, column=0)
+
         file_frame = ttk.LabelFrame(self.action_frame, text="Map", padding=(10, 10))
         file_frame.grid(row=5, column=0, padx=10, pady=10, sticky="nsew", columnspan=3)
 
@@ -801,10 +1030,10 @@ class BattleScreenManager:
         button_save = ttk.Button(file_frame, text="Save", command=self.save_map_to_db)
         button_save.grid(row=1, column=0)
 
-        button_save = ttk.Button(file_frame, text="Load", command=self.save_map_to_db)
-        button_save.grid(row=1, column=1)
+        button_load = ttk.Button(file_frame, text="Load")
+        button_load.grid(row=1, column=1)
 
-        button_save = ttk.Button(file_frame, text="Delete", command=self.save_map_to_db)
+        button_save = ttk.Button(file_frame, text="Delete")
         button_save.grid(row=1, column=2)
 
         button_start_battle = ttk.Button(self.info_frame, text="Start Battle", command=self.start_battle)

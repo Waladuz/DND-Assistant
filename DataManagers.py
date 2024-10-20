@@ -177,6 +177,7 @@ class MapManager:
         for row in rows:
             new_map = Map(row)
             new_map.get_enemies_to_map_from_db()
+            new_map.get_loot_to_map_from_db()
             self.id_to_map_dict[new_map.ID] = new_map
 
 
@@ -189,6 +190,8 @@ class Map:
 
         self.grid_interval = int(values[3])
         self.enemy_list = []
+        self.loot_list = []
+        self.money_loot = int(values[4])
 
     def get_enemies_to_map_from_db(self):
         self.enemy_list = []
@@ -204,6 +207,15 @@ class Map:
             print(creature.Temp_CharaName)
             self.enemy_list.append(creature)
 
+    def get_loot_to_map_from_db(self):
+        self.loot_list = []
+        connection = sqlite3.connect('assets.db')
+        cursor = connection.cursor()
+        sql_query = "SELECT * FROM map_loot WHERE map_id = ?"
+        cursor.execute(sql_query, (self.ID,))
+        for row in cursor.fetchall():
+            self.loot_list.append(row[1])
+
     def set_enemy_list(self, new_list):
         self.enemy_list = new_list
 
@@ -218,12 +230,15 @@ class Map:
         delete_query = "DELETE FROM map_enemies WHERE map_id = ?"
         cursor.execute(delete_query, (self.ID,))
 
+        delete_query = "DELETE FROM map_loot WHERE map_id = ?"
+        cursor.execute(delete_query, (self.ID,))
+
         insert_query = """
-                        INSERT INTO maps (map_id, image_name, map_name, grid_interval)
-                        VALUES (?, ?, ?, ?)
+                        INSERT INTO maps (map_id, image_name, map_name, grid_interval, map_money_loot)
+                        VALUES (?, ?, ?, ?, ?)
                         """
 
-        cursor.execute(insert_query, (self.ID, self.image_name, self.map_name, self.grid_interval))
+        cursor.execute(insert_query, (self.ID, self.image_name, self.map_name, self.grid_interval, self.money_loot))
 
         for enemy in self.enemy_list:
             insert_query = """
@@ -233,8 +248,14 @@ class Map:
             cursor.execute(insert_query, (self.ID, enemy.ID, enemy.Temp_ID, enemy.Temp_CharaName,
                                           enemy.Temp_HP_Max))
 
-        connection.commit()
+        for loot in self.loot_list:
+            insert_query = """
+                                            INSERT INTO map_loot (map_id, item_id)
+                                            VALUES (?, ?)
+                                            """
+            cursor.execute(insert_query, (self.ID, loot))
 
+        connection.commit()
 
 
 cm_shared = CharacterManager()

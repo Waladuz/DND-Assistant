@@ -16,7 +16,8 @@ DATABANK_BASE = {
     "Max HP": "hp_max",
     "Initiative": "base_initiative",
     "Speed": "base_speed",
-    "AC": "base_ac"
+    "AC": "base_ac",
+    "Money": "money"
 }
 
 DATABANK_ATTRIBUTES = {

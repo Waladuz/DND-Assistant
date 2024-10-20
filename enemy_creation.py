@@ -3,15 +3,9 @@ import os
 import glob
 from tkinter import ttk
 import character
-import shared_data
-import re
 from DataManagers import cm_shared, em_shared
 from PIL import Image, ImageTk
-from tktooltip import ToolTip
 from OnDemandWindows import window_manager
-from GUI_CharacterInfo import charaWindow
-from character_overview import party_menu
-from battle_screen import battle_manager
 
 
 class EnemyCreationWindow:
@@ -60,7 +54,7 @@ class EnemyCreationWindow:
         self.current_enemy.update_values(base_data, attribute_data, skill_data, infos_data)
         self.current_enemy.save_enemy_to_db()
 
-    def load_enemy_selected(self, event, force_enemy=None):
+    def load_enemy_selected(self, event, force_enemy=None, call_from_battle=False):
         if force_enemy is None:
             combo_entry = self.enemy_selection_combobox.get()
             enemy_id = int(combo_entry.split()[0])
@@ -70,8 +64,9 @@ class EnemyCreationWindow:
 
             enemy = em_shared.id_to_enemy_dictionary[enemy_id]
         else:
-            self.enemy_selection_combobox.set(f"{force_enemy.ID} - New Enemy")
             enemy = force_enemy
+            if not call_from_battle:
+                self.enemy_selection_combobox.set(f"{force_enemy.ID} - New Enemy")
 
         self.current_enemy = enemy
         base = enemy.get_base_array()
@@ -83,27 +78,38 @@ class EnemyCreationWindow:
             if i in [2, 3]:
                 if base[i] is not None:
                     self.base_entries[i].set(base[i])
+                if call_from_battle:
+                    self.base_entries[i].config(state="disabled")
                 continue
 
             self.base_entries[i].delete(0, tk.END)
             self.base_entries[i].insert(0, base[i])
+            if call_from_battle:
+                self.base_entries[i].config(state="readonly")
 
         for i, entry in enumerate(self.attribute_entries):
             self.attribute_entries[i].delete(0, tk.END)
             self.attribute_entries[i].insert(0, attributes[i])
+            if call_from_battle:
+                self.attribute_entries[i].config(state="readonly")
 
         for i, entry in enumerate(self.skill_entries):
             self.skill_entries[i].delete(0, tk.END)
             self.skill_entries[i].insert(0, skills[i])
+            if call_from_battle:
+                self.skill_entries[i].config(state="readonly")
 
         for i, entry in enumerate(self.battle_info_entries):
             self.battle_info_entries[i].delete("1.0", "end")
             self.battle_info_entries[i].insert("1.0", infos[i])
+            if call_from_battle:
+                self.battle_info_entries[i].config(state="disabled")
 
         self.current_enemy.get_all_attacks_of_enemy()
-        self.enemy_selection_combobox['values'] = em_shared.get_ids_and_names_as_string()
+        if not call_from_battle:
+            self.enemy_selection_combobox['values'] = em_shared.get_ids_and_names_as_string()
         self.load_enemy_attack_list()
-        self.load_portrait(is_preview=False)
+        self.load_portrait(is_preview=False, call_from_battle=call_from_battle)
 
     def remove_selected_element(self):
         selected_item = self.attack_list.selection()
@@ -113,12 +119,14 @@ class EnemyCreationWindow:
             self.current_enemy.remove_attack_by_id(attack_id)
             self.load_enemy_attack_list()
 
-    def load_portrait(self, event=None, is_preview=True):
+    def load_portrait(self, event=None, is_preview=True, call_from_battle=False):
         if is_preview:
             image_name = self.portrait_combobox.get()
         else:
             image_name = self.current_enemy.Portrait_ID
             self.portrait_combobox.set(image_name)
+            if call_from_battle:
+                self.portrait_combobox.config(state="disabled")
 
         if not os.path.exists(rf"enemy/{image_name}") or image_name == "":
             return
@@ -219,7 +227,7 @@ class EnemyCreationWindow:
             entries = (attack.ID, attack.name, attack.description)
             self.attack_list.insert("", "end", values=entries)
 
-    def open_enemy_creation_window(self, main_window):
+    def open_enemy_creation_window(self, main_window, call_from_battle=False):
         if self.creation_window is not None:
             if self.creation_window.winfo_exists():
                 return
@@ -252,6 +260,7 @@ class EnemyCreationWindow:
         self.portrait_combobox.bind("<FocusIn>", self.get_list_of_portraits)
         self.portrait_combobox.bind("<<ComboboxSelected>>", func=lambda event: self.load_portrait(is_preview=True))
 
+        self.portrait_combobox.config(state="disabled")
         self.get_list_of_portraits()
 
         self.base_entries = []
@@ -337,28 +346,29 @@ class EnemyCreationWindow:
         file_frame = ttk.LabelFrame(self.creation_window, text="File", padding=(10, 10))
         file_frame.grid(row=0, column=4, padx=10, pady=10, sticky="nsew", columnspan=1)
 
-        selection_label = ttk.Label(file_frame, text="Select")
-        selection_label.grid(row=0, column=0, sticky="e")
+        if not call_from_battle:
+            selection_label = ttk.Label(file_frame, text="Select")
+            selection_label.grid(row=0, column=0, sticky="e")
 
-        self.enemy_selection_combobox = ttk.Combobox(file_frame, width=15,
-                                                     values=em_shared.get_ids_and_names_as_string(), state="readonly")
-        self.enemy_selection_combobox.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
-        self.enemy_selection_combobox.current(0)
+            self.enemy_selection_combobox = ttk.Combobox(file_frame, width=15,
+                                                         values=em_shared.get_ids_and_names_as_string(), state="readonly")
+            self.enemy_selection_combobox.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
+            self.enemy_selection_combobox.current(0)
 
-        self.enemy_selection_combobox.bind("<<ComboboxSelected>>", func=self.load_enemy_selected)
+            self.enemy_selection_combobox.bind("<<ComboboxSelected>>", func=self.load_enemy_selected)
 
-        save_enemy_button = ttk.Button(file_frame, text="Save Data", width=20, command=self.save_enemy_select)
-        save_enemy_button.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+            save_enemy_button = ttk.Button(file_frame, text="Save Data", width=20, command=self.save_enemy_select)
+            save_enemy_button.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
-        load_enemy_button = ttk.Button(file_frame, text="Load Data", width=20,
-                                       command=lambda: self.load_enemy_selected(None))
-        load_enemy_button.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
+            load_enemy_button = ttk.Button(file_frame, text="Load Data", width=20,
+                                           command=lambda: self.load_enemy_selected(None))
+            load_enemy_button.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
-        new_enemy_button = ttk.Button(file_frame, text="Create New", width=20, command=self.new_character)
-        new_enemy_button.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
+            new_enemy_button = ttk.Button(file_frame, text="Create New", width=20, command=self.new_character)
+            new_enemy_button.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
 
-        close_window_button = ttk.Button(file_frame, text="Close", width=20, command=self.creation_window.destroy)
-        close_window_button.grid(row=2, column=1, padx=5, pady=5, sticky="nsew")
+            close_window_button = ttk.Button(file_frame, text="Close", width=20, command=self.creation_window.destroy)
+            close_window_button.grid(row=2, column=1, padx=5, pady=5, sticky="nsew")
 
         attack_list_frame = ttk.LabelFrame(battle_into_frame, text="Attack List", padding=(10, 10))
         attack_list_frame.grid(row=6, column=0, padx=10, pady=10, sticky="nsew", columnspan=2)
@@ -377,13 +387,14 @@ class EnemyCreationWindow:
         self.attack_list.configure(yscrollcommand=scrollbar.set)
         scrollbar.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
-        add_attack_button = ttk.Button(attack_list_frame, text="New Attack", width=20,
-                                       command=self.add_new_attack)
-        add_attack_button.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+        if not call_from_battle:
+            add_attack_button = ttk.Button(attack_list_frame, text="New Attack", width=20,
+                                           command=self.add_new_attack)
+            add_attack_button.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
-        remove_attack_button = ttk.Button(attack_list_frame, text="Remove Attack", width=20,
-                                          command=self.remove_selected_element)
-        remove_attack_button.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
+            remove_attack_button = ttk.Button(attack_list_frame, text="Remove Attack", width=20,
+                                              command=self.remove_selected_element)
+            remove_attack_button.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
 
         for col in columns:
             if col == "Description":
@@ -393,7 +404,7 @@ class EnemyCreationWindow:
             self.attack_list.heading(col, text=col)
             self.attack_list.column(col, width=width, anchor="center")
 
-        self.load_enemy_selected(None, force_enemy=self.current_enemy)
+        self.load_enemy_selected(None, force_enemy=self.current_enemy, call_from_battle=call_from_battle)
 
 
 enemy_creator = EnemyCreationWindow()

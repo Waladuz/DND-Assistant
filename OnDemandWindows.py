@@ -622,10 +622,15 @@ class OnDemandWindows:
         inventory_frame = ttk.LabelFrame(self.inventory_window, text="Inventory", width=200, padding=(10, 10))
         inventory_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
+        money_frame = ttk.LabelFrame(inventory_frame, text="Money", padding=(10, 10))
+        money_frame.pack(fill='x', expand=False)
+
+        ttk.Label(money_frame, text=f"Current Money: {chara.Money} cp", anchor='w').pack(fill='both', expand=True)
+
         columns = ("Name", "Type", "Weight", "Value", "Amount")
         widths = (150, 100, 50, 50, 70)
 
-        ttk.Label(inventory_frame, text="All Items (Double-Click To Change Amount)", anchor='w').pack(fill='both')
+        ttk.Label(inventory_frame, text=f"All Items (Double-Click To Change Amount)", anchor='w').pack(fill='both')
         self.inventory_list = ttk.Treeview(inventory_frame, columns=columns, show="headings", height=6, style="Custom.Treeview")
         for i, col in enumerate(columns):
             self.inventory_list.heading(col, text=col)
@@ -643,7 +648,7 @@ class OnDemandWindows:
                                      command=lambda: self.open_add_item_window(chara, party_menu_root))
         add_item_button.pack(side="bottom", pady=5)
 
-        self.inventory_list.bind("<Double-1>", lambda event: self.open_item_slot_window(event, chara))
+        self.inventory_list.bind("<Double-1>", lambda event: self.open_item_slot_window(event, chara, party_menu_root))
 
         self.inventory_window.mainloop()
 
@@ -822,7 +827,7 @@ class OnDemandWindows:
 
         self.refresh_inventory_lists(chara)
 
-    def open_item_slot_window(self, event, chara):
+    def open_item_slot_window(self, event, chara, party_root):
         def set_number(item_ID, current_value, new_value, window):
             diff = new_value - current_value
             if diff > 0:
@@ -838,10 +843,10 @@ class OnDemandWindows:
         if len(selected_items) == 0:
             return
 
-        inventory_edit_window = tk.Toplevel(self.inventory_window)
+        inventory_edit_window = tk.Toplevel(party_root)
         inventory_edit_window.title("Change Amount")
 
-        self.position_window(inventory_edit_window, self.inventory_window)
+        self.position_window(self.inventory_window, inventory_edit_window)
 
         selected_item = selected_items[0]
         item = self.Main_Item_BaseItem_Dict[selected_item]
@@ -853,14 +858,11 @@ class OnDemandWindows:
         entry.grid(row=0, column=1, padx=5, pady=5, sticky="e")
         entry.insert(0, f"{current_value}")
 
-        # Create a Add Item Button to close the window
         set_number_button = ttk.Button(inventory_edit_window, text="Confirm",
                                          command=lambda: set_number(item.ID, int(current_value),
                                                                     int(entry.get()), inventory_edit_window))
         set_number_button.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
-
-        # Create a Add Item Button to close the window
         close_button = ttk.Button(inventory_edit_window, text="close",
                                          command=inventory_edit_window.destroy)
         close_button.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")

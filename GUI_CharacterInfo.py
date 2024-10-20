@@ -387,7 +387,7 @@ class CharacterWindow:
 
         self.refresh_inventory_list()
 
-    def open_item_slot_window(self, event, chara):
+    def open_item_slot_window(self, event):
         def set_number(item_ID, current_value, new_value, window):
             diff = new_value - current_value
             if diff > 0:
@@ -486,7 +486,7 @@ class CharacterWindow:
 
         # Labels and Entry fields for six attributes
         base_labels = ["ID", "Name", "Race", "Class", "Level", "Exp. Points", "Alignment", "Player Name", "HP Max",
-                       "Initiative", "Speed", "AC"]
+                       "Initiative", "Speed", "AC", "Money"]
         races = [
             "Dwarf", "Elf", "Halfling", "Human",
             "Dragonborn", "Gnome", "Half-Elf",
@@ -678,7 +678,7 @@ class CharacterWindow:
         self.list1.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=5)
         scrollbar.pack(side="right", fill="y", pady=5)
 
-        self.list1.bind("<Double-1>", self.open_item_slot_window)
+        self.list1.bind("<Double-1>", lambda event: self.open_item_slot_window(event))
 
         if chara is None:
             self.load_character_from_change(None)

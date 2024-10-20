@@ -37,3 +37,9 @@ class BattleManager:
         self.initiative_to_entity_dictionary = dict(sorted(self.initiative_to_entity_dictionary.items(), reverse=True))
 
         self.current_battle_state = 3
+
+    def check_if_enemies_dead(self):
+        for enemy in self.enemy_list:
+            if enemy.Temp_HP > 0:
+                return False
+        return True
