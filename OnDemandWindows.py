@@ -220,6 +220,10 @@ class OnDemandWindows:
             label = ttk.Label(attribute_frame, text=f"{chara_attributes[i]}", font=("Helvetica", 12, "bold"))
             label.grid(row=1, column=i, padx=0, pady=0, sticky="ns")
 
+            label = ttk.Label(attribute_frame, text=f" {shared_data.get_attribute_modifier(chara_attributes[i]):+d}"
+                              , font=("Helvetica", 10))
+            label.grid(row=2, column=i, padx=0, pady=0, sticky="ns")
+
         skills_frame = ttk.LabelFrame(self.stats_window, text="Skills", width=200, padding=(10, 10))
         skills_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
