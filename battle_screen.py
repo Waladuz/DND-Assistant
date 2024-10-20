@@ -635,6 +635,8 @@ class BattleScreenManager:
         self.entry_map_id.delete(0, tk.END)
         self.entry_map_id.insert(0, self.current_map.ID)
 
+        self.map_selection_combobox['values'] = self.load_list_of_maps()
+
     def open_initiative_roll_map(self):
         if self.battle_screen_initiative_window is not None:
             if self.battle_screen_initiative_window.winfo_exists():
@@ -897,6 +899,16 @@ class BattleScreenManager:
         self.split_loot_window.destroy()
         character_overview.party_menu.create_party_elements()
 
+    def delete_map(self):
+        if self.current_map is None:
+            return
+        messagebox.askokcancel("Delete Map", "Are you sure you want to delete this map, you motherfucking"
+                                             " piece of shit?")
+
+        mm_shared.delete_map(self.current_map.ID)
+        self.map_selection_combobox.current(0)
+        self.load_selected_map(main_window=self.main_window)
+
     def open_battle_map(self, main_window):
         if self.main_battle_window is not None:
             if self.main_battle_window.winfo_exists():
@@ -912,20 +924,16 @@ class BattleScreenManager:
         self.map_frame = ttk.LabelFrame(self.main_battle_window, text="Map", padding=(10, 10))
         self.map_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
-        # Load the background image using PIL (Pillow)
         background_image = Image.open(r"maps/map1.png").resize(
             (self.map_size, self.map_size))  # Replace with your image path
         photo_image = ImageTk.PhotoImage(background_image, master=main_window)
 
-        # Create a canvas
         self.main_canvas = tk.Canvas(self.map_frame, width=photo_image.width(), height=photo_image.height())
         self.main_canvas.pack()
 
         self.main_canvas.bind("<Button-1>", self.on_left_click)
         self.main_canvas.bind("<Button-3>", self.on_right_click)
 
-
-        # Add the background image to the canvas
         self.map_image = self.main_canvas.create_image(0, 0, image=photo_image, anchor="nw")
 
         self.action_frame = ttk.LabelFrame(self.main_battle_window, text="Map", padding=(10, 10))
@@ -1043,13 +1051,15 @@ class BattleScreenManager:
         button_load = ttk.Button(file_frame, text="Load")
         button_load.grid(row=1, column=1)
 
-        button_save = ttk.Button(file_frame, text="Delete")
-        button_save.grid(row=1, column=2)
+        button_delete = ttk.Button(file_frame, text="Delete", command=self.delete_map)
+        button_delete.grid(row=1, column=2)
 
         button_start_battle = ttk.Button(self.info_frame, text="Start Battle", command=self.start_battle)
         button_start_battle.pack(fill='both', expand=True)
 
         self.main_battle_window.columnconfigure(2, weight=1)  # Used to allow column 1 in some_frame to expand
+        self.main_battle_window.columnconfigure(1, weight=1)  # Used to allow column 1 in some_frame to expand
+        self.main_battle_window.rowconfigure(0, weight=1)  # Used to allow column 1 in some_frame to expand
 
         self.read_new_interval()
 

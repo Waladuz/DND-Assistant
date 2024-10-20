@@ -45,22 +45,16 @@ class CharacterManager:
         return self.Character_From_ID_Dictionary
 
     def delete_character_from_databank(self, character_id):
-        # Connect to the SQLite database called "assets.db"
         connection = sqlite3.connect('assets.db')
         cursor = connection.cursor()
 
-        # SQL query to delete a character by ID
         sql_query = "DELETE FROM character WHERE id = ?"
-
-        # Execute the SQL query with the provided character ID
         cursor.execute(sql_query, (character_id,))
 
-        # Commit the changes to the database
         connection.commit()
 
         self.refresh_available_character_list()
 
-        # Check if any rows were affected
         if cursor.rowcount == 0:
             return False
         else:
@@ -179,6 +173,17 @@ class MapManager:
             new_map.get_enemies_to_map_from_db()
             new_map.get_loot_to_map_from_db()
             self.id_to_map_dict[new_map.ID] = new_map
+
+    def delete_map(self, map_id):
+        connection = sqlite3.connect('assets.db')
+        cursor = connection.cursor()
+
+        sql_query = "DELETE FROM maps WHERE map_id = ?"
+        cursor.execute(sql_query, (map_id,))
+
+        connection.commit()
+
+        self.reload_all_maps_from_db()
 
 
 class Map:
