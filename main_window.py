@@ -4,7 +4,7 @@ from OnDemandWindows import window_manager
 from character_overview import party_menu
 from battle_screen import battle_manager
 from enemy_creation import enemy_creator
-
+from music_player import music_controller
 
 class MainWindow:
     def __init__(self):
@@ -34,8 +34,13 @@ class MainWindow:
                                   command=lambda: enemy_creator.open_enemy_creation_window(self.root_window))
         enemy_creation_button.grid(row=1, column=1)
 
+        music_button = ttk.Button(base_frame, text="♫ Music", width=20,
+                                           command=lambda: music_controller.open_music_window(self.root_window))
+        music_button.grid(row=2, column=0)
+
         self.root_window.mainloop()
 
 
-main_window = MainWindow()
-main_window.open_main_window()
+if __name__ == '__main__':
+    main_window = MainWindow()
+    main_window.open_main_window()
