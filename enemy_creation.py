@@ -260,7 +260,7 @@ class EnemyCreationWindow:
         self.portrait_combobox.bind("<FocusIn>", self.get_list_of_portraits)
         self.portrait_combobox.bind("<<ComboboxSelected>>", func=lambda event: self.load_portrait(is_preview=True))
 
-        self.portrait_combobox.config(state="disabled")
+        #self.portrait_combobox.config(state="disabled")
         self.get_list_of_portraits()
 
         self.base_entries = []

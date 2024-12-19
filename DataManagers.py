@@ -204,6 +204,7 @@ class Map:
         cursor = connection.cursor()
         sql_query = "SELECT * FROM map_enemies WHERE map_id = ?"
         cursor.execute(sql_query, (self.ID,))
+        print(cursor.fetchall())
         for row in cursor.fetchall():
             creature = copy.copy(em_shared.id_to_enemy_dictionary[int(row[1])])
             creature.Temp_ID = row[2]
