@@ -4,15 +4,20 @@ import glob
 from tkinter import ttk
 import character
 import shared_data
-from item import item_database
+from item import item_database, Item, Weapon, Armor
 import re
 from DataManagers import cm_shared
+from typing import List
 from PIL import Image, ImageTk
 from tktooltip import ToolTip
 import random
 
+
 class OnDemandWindows:
     def __init__(self):
+        self.item_list = None
+        self.item_list2 = None
+        self.item_list3 = None
         self.inventory_list = None
         self.armor_list = None
         self.weapons_list = None
@@ -24,12 +29,14 @@ class OnDemandWindows:
 
         self.level_bonus_window = None
 
+        self.item_creation_window = None
         self.stats_window = None
         self.magic_window = None
         self.inventory_window = None
         self.enemy_attack_info_window = None
         self.dice_window = None
         self.add_item_window = None
+        self.loot_window = None
 
         self.magic_spell_list = None
         self.submenu_spell_list = None
@@ -40,6 +47,8 @@ class OnDemandWindows:
 
         self.select_weapons_list = None
         self.select_armors_list = None
+
+        self.current_loot_list = []
 
         # Dice variables
         self.numbers_frame = None
@@ -63,6 +72,268 @@ class OnDemandWindows:
 
         sub.geometry(f"+{root_x}+{root_y}")
 
+    def update_treeview(self, event, search_var):
+        for item in self.item_list2.get_children():
+            self.item_list2.delete(item)
+
+        item_list: List[Item] = item_database.get_list_of_item_with_part_string(search_var.get())
+
+        for item in item_list:
+            entries = (item.ID, item.Item_Name, item.Item_Type, item.Item_Weight, item.Item_Value)
+            list_item = self.item_list2.insert("", "end", values=entries)
+            self.Main_Item_BaseItem_Dict[list_item] = item
+
+    def create_item_search_in_frame(self, frame: ttk.LabelFrame):
+        for widget in frame.winfo_children():
+            widget.destroy()
+
+        description_label = ttk.Label(frame, text="Type Item Name")
+        description_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+
+        search_var = tk.StringVar()
+        search_entry = ttk.Entry(frame, textvariable=search_var)
+        search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="e")
+
+        search_entry.bind("<KeyRelease>", lambda event: self.update_treeview(event, search_var))
+
+        result_frame = ttk.LabelFrame(frame, padding=(0, 0), text="Results", relief="ridge")
+        result_frame.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="e")
+
+        columns = ("ID", "Name", "Type", "Weight", "Value")
+        column_widths = [50, 150, 50, 55, 55]
+
+        # Create the Treeview widget with 4 columns
+        self.item_list = ttk.Treeview(result_frame, columns=columns, show="headings", height=15, style="Custom.Treeview")
+        for i, col in enumerate(columns):
+            self.item_list.heading(col, text=col)
+            self.item_list.column(col, width=column_widths[i], anchor="center")
+
+        # Create a vertical scrollbar for the Treeview
+        scrollbar = ttk.Scrollbar(result_frame, orient="vertical", command=self.item_list.yview)
+        self.item_list.configure(yscrollcommand=scrollbar.set)
+
+        # Pack the Treeview and scrollbar into the LabelFrame
+        self.item_list.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=5)
+        scrollbar.pack(side="right", fill="y", pady=5)
+
+    def open_loot_window(self, root):
+        if self.loot_window is not None:
+            if self.loot_window.winfo_exists():
+                return
+
+        self.loot_window = tk.Toplevel(root)
+        self.loot_window.title(f"Loot Window")
+
+        item_selection_frame = ttk.LabelFrame(self.loot_window, padding=(0, 0), text="Add Item", relief="ridge")
+        item_selection_frame.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
+
+        item_view_frame = ttk.LabelFrame(self.loot_window, padding=(0, 0), text="Current Loot", relief="ridge")
+        item_view_frame.grid(row=1, column=0, padx=0, pady=0, sticky="nsew")
+
+        loot_split_frame = ttk.LabelFrame(self.loot_window, padding=(0, 0), text="Split Loot", relief="ridge")
+        loot_split_frame.grid(row=2, column=0, padx=0, pady=0, sticky="nsew")
+
+        description_label = ttk.Label(item_selection_frame, text="Type Item Name")
+        description_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+        search_var = tk.StringVar()
+        search_entry = ttk.Entry(item_selection_frame, textvariable=search_var)
+        search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="e")
+
+        amount_description_label = ttk.Label(item_selection_frame, text="Type Amount")
+        amount_description_label.grid(row=0, column=2, padx=5, pady=5, sticky="e")
+
+        amount_entry = ttk.Entry(item_selection_frame, width=5)
+        amount_entry.grid(row=0, column=3, padx=5, pady=5, sticky="e")
+
+        search_entry.bind("<KeyRelease>", lambda event: self.update_treeview(event, search_var))
+
+        result_frame = ttk.LabelFrame(item_selection_frame, padding=(0, 0), text="Results", relief="ridge")
+        result_frame.grid(row=1, column=0, columnspan=4, padx=5, pady=5, sticky="e")
+
+        columns = ("ID", "Name", "Type", "Weight", "Value")
+        column_widths = [50, 150, 50, 55, 55]
+
+        # Create the Treeview widget with 4 columns
+        self.item_list2 = ttk.Treeview(result_frame, columns=columns, show="headings", height=7,
+                                      style="Custom.Treeview")
+        for i, col in enumerate(columns):
+            self.item_list2.heading(col, text=col)
+            self.item_list2.column(col, width=column_widths[i], anchor="center")
+
+        # Create a vertical scrollbar for the Treeview
+        scrollbar = ttk.Scrollbar(result_frame, orient="vertical", command=self.item_list2.yview)
+        self.item_list2.configure(yscrollcommand=scrollbar.set)
+
+        # Pack the Treeview and scrollbar into the LabelFrame
+        self.item_list2.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=5)
+        scrollbar.pack(side="right", fill="y", pady=5)
+
+        ###################################
+
+        self.item_list3 = ttk.Treeview(item_view_frame, columns=columns, show="headings", height=7,
+                                      style="Custom.Treeview")
+        for i, col in enumerate(columns):
+            self.item_list3.heading(col, text=col)
+            self.item_list3.column(col, width=column_widths[i], anchor="center")
+
+        # Create a vertical scrollbar for the Treeview
+        scrollbar = ttk.Scrollbar(item_view_frame, orient="vertical", command=self.item_list3.yview)
+        self.item_list3.configure(yscrollcommand=scrollbar.set)
+
+        # Pack the Treeview and scrollbar into the LabelFrame
+        self.item_list3.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=5)
+        scrollbar.pack(side="right", fill="y", pady=5)
+
+        self.item_list2.bind("<Double-1>", lambda event: self.add_item_to_loot_list(event))
+
+        ###################################
+
+        current_party_ids = cm_shared.get_all_ids_from_available_characters()
+        current_party_dict = {}
+
+        for chara_id in current_party_ids:
+            current_party_dict[chara_id] = cm_shared.Character_From_ID_Dictionary[chara_id]
+
+        y_pos = 0
+
+        for chara_id, chara in current_party_dict.items():
+            give_button = ttk.Button(loot_split_frame, text=chara.Base_Name, width=15)
+            give_button.grid(row=0, column=y_pos, padx=4, pady=0, sticky="nsew")
+            y_pos += 1
+
+    def add_item_to_loot_list(self, event):
+        tree = event.widget
+        selected_item = tree.focus()  # Returns the ID of the clicked item
+        item_id = tree.item(selected_item, "values")[0]
+
+        self.current_loot_list.append(item_id)
+        self.refresh_current_loot_window()
+
+    def refresh_current_loot_window(self):
+        for item in self.item_list3.get_children():
+            self.item_list3.delete(item)
+
+        item_list: List[Item] = []
+
+        for item_id in self.current_loot_list:
+            item_list.append(item_database.Item_Dictionary[int(item_id)])
+
+        for item in item_list:
+            entries = (item.ID, item.Item_Name, item.Item_Type, item.Item_Weight, item.Item_Value)
+            list_item = self.item_list3.insert("", "end", values=entries)
+            self.Main_Item_BaseItem_Dict[list_item] = item
+
+    def open_item_creation_window(self, root):
+        def save_fields(combobox):
+            field_entries = []
+            print(len(option_values))
+            fields = entry_fields + option_values
+
+            for field in fields:
+                field_entries.append(field.get())
+
+            item_database.add_new_item_to_db(field_entries)
+
+        def update_fields(combobox):
+            for widget in options_frame.winfo_children():
+                widget.destroy()
+
+            option_values.clear()
+
+            if combobox.get() == "weapon":
+                weapon_settings = [
+                    ["Weapon Type", ["melee", "far"]],
+                    ["Weapon Damage"],
+                    ["Damage Type", ["bludgeoning", "slashing", "piercing"]],
+                    ["Min. Range"],
+                    ["Max. Range"],
+                    ["Loading (x)"],
+                    ["Throw (x)"],
+                    ["Weight Class", ["heavy", "light"]],
+                    ["Two-Hands (x)"],
+                    ["Finesse (x)"],
+                    ["Versatile Damage"],
+                    ["Reach (x)"]
+                ]
+
+                for row_num, wep in enumerate(weapon_settings):
+                    if len(wep) == 1:
+                        entry = shared_data.ui_add_label_entry(options_frame, wep[0], row_num, 0, 30)
+                    elif len(wep) == 2:
+                        entry = shared_data.ui_add_label_combobox(options_frame, wep[0], wep[1], row_num, 0, 30)
+                    else:
+                        continue
+
+                    option_values.append(entry)
+
+            if combobox.get() == "armor":
+                armor_settings = [
+                    ["Armor Type", ["light", "medium", "heavy", "shield"]],
+                    ["AC"],
+                    ["Dex. Modifier (0,1,2)"],
+                    ["Strength Requirement"],
+                    ["Stealth. Modifier (x)"]
+                ]
+
+                for row_num, arm in enumerate(armor_settings):
+                    if len(arm) == 1:
+                        entry = shared_data.ui_add_label_entry(options_frame, arm[0], row_num, 0, 30)
+                    elif len(arm) == 2:
+                        entry = shared_data.ui_add_label_combobox(options_frame, arm[0], arm[1], row_num, 0, 30)
+                    else:
+                        continue
+
+                    option_values.append(entry)
+
+        if self.item_creation_window is not None:
+            if self.item_creation_window.winfo_exists():
+                return
+
+        self.item_creation_window = tk.Toplevel(root)
+        self.item_creation_window.title(f"Item Creation")
+
+        option_values = []
+
+        creation_frame = ttk.LabelFrame(self.item_creation_window, padding=(0, 0), text="Create Item", relief="ridge")
+        creation_frame.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
+
+        item_labels = ("Item Name", "Type", "Weight", "Value")
+        item_types = ["weapon", "armor", "replenishable", "tool"]
+
+        entry_fields = []
+        combo_field = None
+
+        for i, label_name in enumerate(item_labels):
+            label = ttk.Label(creation_frame, text=label_name)
+            label.grid(row=i, column=0, padx=0, pady=0, sticky="nsew")
+
+            if label_name == "Type":
+                combo_field = ttk.Combobox(creation_frame, values=item_types, width=18, state="readonly")
+                combo_field.grid(row=i, column=1, padx=0, pady=0, sticky="nsew")
+                combo_field.bind("<<ComboboxSelected>>", lambda event: update_fields(combo_field))
+                entry_fields.append(combo_field)
+            else:
+                entry_field = ttk.Entry(creation_frame, width=19)
+                entry_field.grid(row=i, column=1, padx=0, pady=0, sticky="nsew")
+                entry_fields.append(entry_field)
+
+        # LabelFrame for additional options
+        actions_frame = ttk.LabelFrame(creation_frame, text="Actions")
+        actions_frame.grid(row=len(item_labels), column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+
+        save_button = ttk.Button(actions_frame, text="SAVE", command=lambda: save_fields(combobox=combo_field))
+        save_button.pack()
+
+        # LabelFrame for additional options
+        options_frame = ttk.LabelFrame(creation_frame, text="More Options")
+        options_frame.grid(row=len(item_labels) + 1, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+
+        base_frame = ttk.LabelFrame(self.item_creation_window, padding=(0, 0), text="Search Item List", relief="ridge")
+        base_frame.grid(row=0, column=1, padx=0, pady=0, sticky="nsew")
+
+        self.create_item_search_in_frame(base_frame)
+
     def open_virtual_dice(self, root):
         if self.dice_window is not None:
             if self.dice_window.winfo_exists():
@@ -80,8 +351,8 @@ class OnDemandWindows:
         label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
 
         self.dice_type_combobox = ttk.Combobox(setting_frame, width=15,
-                                           values=dice_type,
-                                           state="readonly")
+                                               values=dice_type,
+                                               state="readonly")
         self.dice_type_combobox.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
         self.dice_type_combobox.current(1)
@@ -90,8 +361,8 @@ class OnDemandWindows:
         label.grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
         self.dice_amount_combobox = ttk.Combobox(setting_frame, width=15,
-                                               values=dice_amount,
-                                               state="readonly")
+                                                 values=dice_amount,
+                                                 state="readonly")
         self.dice_amount_combobox.grid(row=0, column=3, padx=5, pady=5, sticky="w")
 
         self.dice_amount_combobox.current(0)
@@ -122,7 +393,7 @@ class OnDemandWindows:
         redo_button = ttk.Button(actions_frame, text="Redo", command=lambda: self.create_dice(1))
         redo_button.grid(row=0, column=1)
 
-        close_button = ttk.Button(actions_frame, text="Close", command= self.dice_window.destroy)
+        close_button = ttk.Button(actions_frame, text="Close", command=self.dice_window.destroy)
         close_button.grid(row=0, column=2)
 
         self.create_dice(None)
@@ -175,12 +446,12 @@ class OnDemandWindows:
 
             if sum >= int(.85 * int(self.face_number * len(self.all_numbers))):
                 word = random.choice(good)
-                #self.face_sum_label.config(fg="green")
+                # self.face_sum_label.config(fg="green")
             elif sum <= int(.3 * int(self.face_number * len(self.all_numbers))):
                 word = random.choice(bad)
-                #self.face_sum_label.config(fg="red")
-            #else:
-                #self.face_sum_label.config(fg="blue")
+                # self.face_sum_label.config(fg="red")
+            # else:
+            # self.face_sum_label.config(fg="blue")
 
             self.judgment_label.config(text=word)
 
@@ -238,10 +509,10 @@ class OnDemandWindows:
             b = i // 2
 
             label = ttk.Label(skills_frame, text=skill, width=15)
-            label.grid(row=2*b, column=2*a + 1, padx=0, pady=0, sticky="e")
+            label.grid(row=2 * b, column=2 * a + 1, padx=0, pady=0, sticky="e")
 
             label = ttk.Label(skills_frame, text=f"{chara_skills[i]}", font=("Helvetica", 12, "bold"))
-            label.grid(row=2*b, column=2*a, padx=0, pady=0, sticky="e")
+            label.grid(row=2 * b, column=2 * a, padx=0, pady=0, sticky="e")
 
         self.stats_window.mainloop()
 
@@ -260,7 +531,7 @@ class OnDemandWindows:
 
         for i in range(9):
             label = ttk.Label(base_frame, text=f"Lvl. {i + 1}", font=("Helvetica", 12, "bold"))
-            label.grid(row=0, column=2*i, columnspan=2, padx=5, pady=5, sticky="nsew")
+            label.grid(row=0, column=2 * i, columnspan=2, padx=5, pady=5, sticky="nsew")
 
         # Fix this for non-mp classes
         if chara.Base_Class in shared_data.MP_BY_CLASS:
@@ -273,10 +544,10 @@ class OnDemandWindows:
             entry = ttk.Entry(base_frame, width=2)
             entry.delete(0, tk.END)
             entry.insert(0, f"{mp_by_level[i]}")
-            entry.grid(row=1, column=2*i, padx=5, pady=5, sticky="w")
+            entry.grid(row=1, column=2 * i, padx=5, pady=5, sticky="w")
 
             label = ttk.Label(base_frame, text=f"{mp_by_level[i]}")
-            label.grid(row=1, column=2*i + 1, padx=5, pady=5, sticky="nsew")
+            label.grid(row=1, column=2 * i + 1, padx=5, pady=5, sticky="nsew")
 
         spells_frame = ttk.LabelFrame(self.magic_window, text="Spells", width=200, padding=(10, 10))
         spells_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
@@ -287,7 +558,8 @@ class OnDemandWindows:
         column_widths = (120, 30, 100, 100, 50, 80, 80, 120)
         i = 0
 
-        self.magic_spell_list = ttk.Treeview(spells_frame, columns=columns, show="headings", height=6, style="Custom.Treeview")
+        self.magic_spell_list = ttk.Treeview(spells_frame, columns=columns, show="headings", height=6,
+                                             style="Custom.Treeview")
         for col in columns:
             self.magic_spell_list.heading(col, text=col)
             self.magic_spell_list.column(col, width=column_widths[i], anchor="center")
@@ -314,17 +586,18 @@ class OnDemandWindows:
         # Configure the Text widget to work with the scrollbar
         detail_text_box.config(yscrollcommand=scrollbar.set)
 
-        self.magic_spell_list.bind("<<TreeviewSelect>>", lambda event: self.set_magic_detail_info(event, chara, detail_text_box))
+        self.magic_spell_list.bind("<<TreeviewSelect>>",
+                                   lambda event: self.set_magic_detail_info(event, chara, detail_text_box))
 
         action_frame = ttk.LabelFrame(self.magic_window, text="Actions", padding=(10, 10))
         action_frame.grid(row=4, column=0, padx=10, pady=10, sticky="nsew")
 
         add_magic_button = ttk.Button(action_frame, text="Add Spell",
-                                      command= lambda: self.open_add_spell_window(chara))
+                                      command=lambda: self.open_add_spell_window(chara))
         add_magic_button.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
         add_magic_button = ttk.Button(action_frame, text="Remove Spell",
-                                      command= lambda: self.remove_spell_to_chara(chara))
+                                      command=lambda: self.remove_spell_to_chara(chara))
         add_magic_button.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
         self.load_magic_spells_for_chara(chara)
@@ -345,7 +618,7 @@ class OnDemandWindows:
         i = 0
 
         self.submenu_spell_list = ttk.Treeview(base_frame, columns=sub_menu_columns, show="headings", height=6,
-                                             style="Custom.Treeview")
+                                               style="Custom.Treeview")
         for col in sub_menu_columns:
             self.submenu_spell_list.heading(col, text=col)
             self.submenu_spell_list.column(col, width=sub_menu_column_widths[i], anchor="center")
@@ -359,7 +632,7 @@ class OnDemandWindows:
 
         for id, spell in spell_dictionary.items():
             list_item = self.submenu_spell_list.insert("", "end",
-                                                     values=(id, spell.Magic_Name, spell.Magic_Level))
+                                                       values=(id, spell.Magic_Name, spell.Magic_Level))
             self.Listitem_Spell_Submenu_Dict[list_item] = spell
 
         # Create a vertical scrollbar for the Treeview
@@ -373,7 +646,7 @@ class OnDemandWindows:
         action_frame = ttk.LabelFrame(spell_browse_window, text="", width=200, padding=(10, 10))
         action_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
-        add_magic_button = ttk.Button(action_frame, text="Add", command= lambda: self.add_spell_to_chara(chara))
+        add_magic_button = ttk.Button(action_frame, text="Add", command=lambda: self.add_spell_to_chara(chara))
         add_magic_button.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
     def remove_spell_to_chara(self, chara):
@@ -509,8 +782,9 @@ class OnDemandWindows:
 
         self.bonus_notes_entry.insert(tk.END, chara.Level_Up_Notes)
 
-        save_button = ttk.Button(notes_frame, text="Save", command=lambda: save_character_notes(text_field=self.bonus_notes_entry,
-                                                                                                chara=chara))
+        save_button = ttk.Button(notes_frame, text="Save",
+                                 command=lambda: save_character_notes(text_field=self.bonus_notes_entry,
+                                                                      chara=chara))
         save_button.pack(pady=2, side="bottom")
 
         self.level_bonus_window.mainloop()
@@ -616,11 +890,13 @@ class OnDemandWindows:
         self.armor_list.pack(fill="x", padx=10, pady=5)
 
         # Create a Add Item Button to close the window
-        add_armor_button = ttk.Button(equip_frame, text="Equip Armor", command=lambda: self.open_equipment_armor_window(chara=chara))
+        add_armor_button = ttk.Button(equip_frame, text="Equip Armor",
+                                      command=lambda: self.open_equipment_armor_window(chara=chara))
         add_armor_button.pack(pady=5)
 
         # Create a Remove Item Button to close the window
-        remove_armor_button = ttk.Button(equip_frame, text="Unequip Armor", command=lambda: self.remove_equipped_armor(chara))
+        remove_armor_button = ttk.Button(equip_frame, text="Unequip Armor",
+                                         command=lambda: self.remove_equipped_armor(chara))
         remove_armor_button.pack(pady=5)
 
         inventory_frame = ttk.LabelFrame(self.inventory_window, text="Inventory", width=200, padding=(10, 10))
@@ -635,7 +911,8 @@ class OnDemandWindows:
         widths = (150, 100, 50, 50, 70)
 
         ttk.Label(inventory_frame, text=f"All Items (Double-Click To Change Amount)", anchor='w').pack(fill='both')
-        self.inventory_list = ttk.Treeview(inventory_frame, columns=columns, show="headings", height=6, style="Custom.Treeview")
+        self.inventory_list = ttk.Treeview(inventory_frame, columns=columns, show="headings", height=6,
+                                           style="Custom.Treeview")
         for i, col in enumerate(columns):
             self.inventory_list.heading(col, text=col)
             self.inventory_list.column(col, width=widths[i], anchor="center")
@@ -674,7 +951,7 @@ class OnDemandWindows:
         ttk.Label(list_frame, text="Weapon", anchor='w').pack(fill='both')
         # Create the first list (Treeview) with 6 columns
         self.select_weapons_list = ttk.Treeview(list_frame, columns=columns, show="headings", height=4,
-                                         style="Custom.Treeview")
+                                                style="Custom.Treeview")
         self.select_weapons_list.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=5)
 
         # Create a vertical scrollbar for the Treeview
@@ -710,11 +987,12 @@ class OnDemandWindows:
         for item in available_list:
             weapon = item[0]
             list_item = self.select_weapons_list.insert("", "end", values=(weapon.Item_Name, weapon.Weapon_Type,
-                                                 f"{weapon.Weapon_Damage} ("
-                                                 f"{shared_data.get_attribute_modifier(chara.Attribute_Strength):+d})",
-                                                        weapon.Weapon_DamageType,
-                                                 f"{weapon.Weapon_Range_Min}/{weapon.Weapon_Range_Max}",
-                                                        weapon.get_additional_info_as_text(chara), item[1]))
+                                                                           f"{weapon.Weapon_Damage} ("
+                                                                           f"{shared_data.get_attribute_modifier(chara.Attribute_Strength):+d})",
+                                                                           weapon.Weapon_DamageType,
+                                                                           f"{weapon.Weapon_Range_Min}/{weapon.Weapon_Range_Max}",
+                                                                           weapon.get_additional_info_as_text(chara),
+                                                                           item[1]))
             self.Equipment_Item_Weapon_Dict[list_item] = weapon
 
     def equip_selected_weapon(self, chara):
@@ -743,7 +1021,7 @@ class OnDemandWindows:
 
         self.refresh_inventory_lists(chara)
 
-    def open_equipment_armor_window(self, chara, event=None,):
+    def open_equipment_armor_window(self, chara, event=None, ):
         second_window = tk.Toplevel(self.inventory_window)
         second_window.title(f"Add Armor ({chara.Base_Name})")
         second_window.geometry("800x300")
@@ -761,7 +1039,7 @@ class OnDemandWindows:
         ttk.Label(list_frame, text="Armor", anchor='w').pack(fill='both')
         # Create the first list (Treeview) with 6 columns
         self.select_armors_list = ttk.Treeview(list_frame, columns=columns, show="headings", height=4,
-                                         style="Custom.Treeview")
+                                               style="Custom.Treeview")
         self.select_armors_list.pack(side="left", fill="both", expand=True, padx=(0, 5), pady=5)
 
         # Create a vertical scrollbar for the Treeview
@@ -778,7 +1056,7 @@ class OnDemandWindows:
             self.select_armors_list.column(col, width=width, anchor="center")
 
         # Create a Add Item Button to close the window
-        equip_weapon_button = ttk.Button(second_window, text="Equip", command=lambda:self.equip_selected_armor(chara))
+        equip_weapon_button = ttk.Button(second_window, text="Equip", command=lambda: self.equip_selected_armor(chara))
         equip_weapon_button.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
         self.equipment_list_armors(chara)
@@ -802,7 +1080,8 @@ class OnDemandWindows:
                 armour_class_text += f" ({modified:+d})"
 
             list_item = self.select_armors_list.insert("", "end", values=(armor.Item_Name, armor.Armor_Type,
-                                                      armour_class_text, armor.get_additional_info_as_text(), item[1]))
+                                                                          armour_class_text,
+                                                                          armor.get_additional_info_as_text(), item[1]))
             self.Equipment_Item_Armor_Dict[list_item] = armor
 
     def equip_selected_armor(self, chara):
@@ -863,12 +1142,12 @@ class OnDemandWindows:
         entry.insert(0, f"{current_value}")
 
         set_number_button = ttk.Button(inventory_edit_window, text="Confirm",
-                                         command=lambda: set_number(item.ID, int(current_value),
-                                                                    int(entry.get()), inventory_edit_window))
+                                       command=lambda: set_number(item.ID, int(current_value),
+                                                                  int(entry.get()), inventory_edit_window))
         set_number_button.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
         close_button = ttk.Button(inventory_edit_window, text="close",
-                                         command=inventory_edit_window.destroy)
+                                  command=inventory_edit_window.destroy)
         close_button.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
 
     def open_add_item_window(self, chara, party_menu_root):
@@ -980,12 +1259,11 @@ class OnDemandWindows:
         remove_attack_button.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
 
 
-
 dude = cm_shared.Character_From_ID_Dictionary[1]
 
 window_manager = OnDemandWindows()
-#window_manager.open_inventory_window(dude)
+# window_manager.open_inventory_window(dude)
 
-#window_manager.open_magic_window(dude)
-#window_manager.open_bonus_window(dude)
-#window_manager.open_stats_window(dude)
+# window_manager.open_magic_window(dude)
+# window_manager.open_bonus_window(dude)
+# window_manager.open_stats_window(dude)

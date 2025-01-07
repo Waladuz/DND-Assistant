@@ -5,6 +5,7 @@ from character_overview import party_menu
 from battle_screen import battle_manager
 from enemy_creation import enemy_creator
 from music_player import music_controller
+from app import website
 
 class MainWindow:
     def __init__(self):
@@ -37,6 +38,18 @@ class MainWindow:
         music_button = ttk.Button(base_frame, text="♫ Music", width=20,
                                            command=lambda: music_controller.open_music_window(self.root_window))
         music_button.grid(row=2, column=0)
+
+        website_button = ttk.Button(base_frame, text="Website ", width=20,
+                                  command=lambda: website.open_window(self.root_window))
+        website_button.grid(row=2, column=1)
+
+        item_creation_button = ttk.Button(base_frame, text="Item Creation", width=20,
+                                  command=lambda: window_manager.open_item_creation_window(self.root_window))
+        item_creation_button.grid(row=3, column=0)
+
+        item_creation_button = ttk.Button(base_frame, text="Loot Window", width=20,
+                                          command=lambda: window_manager.open_loot_window(self.root_window))
+        item_creation_button.grid(row=3, column=1)
 
         self.root_window.mainloop()
 
