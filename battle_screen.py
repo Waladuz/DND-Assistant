@@ -31,6 +31,8 @@ class BattleScreenManager:
         self.add_loot_window = None
         self.split_loot_window = None
 
+        self.copied_battle_window = None
+
         self.map_frame = None
         self.info_frame = None
         self.action_frame = None
@@ -41,6 +43,8 @@ class BattleScreenManager:
         self.enemy_entry_fields = []
 
         self.main_canvas = None
+        self.secondary_canvas = None
+
         self.map_image_combobox = None
         self.map_selection_combobox = None
         self.enemy_selection_combobox = None
@@ -912,6 +916,10 @@ class BattleScreenManager:
     def open_battle_map(self, main_window):
         if self.main_battle_window is not None:
             if self.main_battle_window.winfo_exists():
+                return
+
+        if self.copied_battle_window is not None:
+            if self.copied_battle_window.winfo_exists():
                 return
 
         self.main_window = main_window

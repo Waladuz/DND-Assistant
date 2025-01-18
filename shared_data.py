@@ -1,4 +1,6 @@
 import sqlite3
+from tkinter import ttk
+from typing import List
 
 #########
 # Databank Reference Dictionaries
@@ -606,6 +608,33 @@ class Spell:
             return "Charisma"
 
         return None
+
+def ui_add_label_entry(labelframe: ttk.LabelFrame, label_name: str, row_pos: int, column_pos: int,
+                       width: int) -> ttk.Entry:
+    label = ttk.Label(labelframe, text=f"{label_name}")
+    label.grid(row=row_pos, column=column_pos, padx=0, pady=0, sticky="nsew")
+    entry_field = ttk.Entry(labelframe, width=width)
+    entry_field.grid(row=row_pos, column=column_pos + 1, padx=0, pady=0, sticky="nsew")
+
+    return entry_field
+
+def ui_add_label_combobox(labelframe: ttk.LabelFrame, label_name: str, selection_list: List[str], row_pos: int,
+                          column_pos: int, width: int) -> ttk.Combobox:
+    label = ttk.Label(labelframe, text=f"{label_name}")
+    label.grid(row=row_pos, column=column_pos, padx=0, pady=0, sticky="nsew")
+    entry_field = ttk.Combobox(labelframe, width=width, values=selection_list, state="readonly")
+    entry_field.grid(row=row_pos, column=column_pos + 1, padx=0, pady=0, sticky="nsew")
+
+    return entry_field
+
+def ui_add_label_checkbox(labelframe: ttk.LabelFrame, label_name: str, selection_list: List[str], row_pos: int,
+                          column_pos: int, width: int) -> ttk.Checkbutton:
+    label = ttk.Label(labelframe, text=f"{label_name}")
+    label.grid(row=row_pos, column=column_pos, padx=0, pady=0, sticky="nsew")
+    entry_field = ttk.Combobox(labelframe, width=width, values=selection_list, state="readonly")
+    entry_field.grid(row=row_pos, column=column_pos + 1, padx=0, pady=0, sticky="nsew")
+
+    return entry_field
 
 
 magic_table = MagicTable()
