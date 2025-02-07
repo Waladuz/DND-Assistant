@@ -1,4 +1,5 @@
 import tkinter as tk
+from collections import Counter
 import os
 import glob
 from tkinter import ttk
@@ -21,6 +22,9 @@ class OnDemandWindows:
         self.inventory_list = None
         self.armor_list = None
         self.weapons_list = None
+
+        self.loot_multiplier_entry = None
+
         self.Listitem_Spell_Dict = {}
         self.Listitem_Spell_Submenu_Dict = {}
 
@@ -117,6 +121,43 @@ class OnDemandWindows:
         scrollbar.pack(side="right", fill="y", pady=5)
 
     def open_loot_window(self, root):
+        def validate_positive_integer(new_value):
+            return new_value.isdigit()
+
+        def give_selected_items_to_player(chara):
+            selected_items = self.item_list3.selection()  # Get all selected items (their IDs)
+
+            if len(selected_items) == 0:
+                return
+
+            deleted_values = []
+
+            for item_entry in selected_items:
+                item_id = self.item_list3.item(item_entry, "values")[0]
+                deleted_values.append(item_id)
+                chara.add_item(int(item_id), 1)
+
+            for value in deleted_values:
+                self.current_loot_list.remove(value)
+
+            self.refresh_current_loot_window()
+
+            # Reset the old selection if possible
+            all_items = self.item_list3.get_children()
+
+            matching_items = []
+            for item_id in all_items:
+                first_column_value = self.item_list3.item(item_id, "values")[0]  # Get the first column value
+                if first_column_value in deleted_values:
+                    matching_items.append(item_id)
+
+            # Set the selection
+            self.item_list3.selection_set(matching_items)
+
+        def clear_selection_list():
+            self.current_loot_list = []
+            self.refresh_current_loot_window()
+
         if self.loot_window is not None:
             if self.loot_window.winfo_exists():
                 return
@@ -140,11 +181,15 @@ class OnDemandWindows:
         search_entry = ttk.Entry(item_selection_frame, textvariable=search_var)
         search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="e")
 
-        amount_description_label = ttk.Label(item_selection_frame, text="Type Amount")
+        amount_description_label = ttk.Label(item_selection_frame, text="Multiplier X")
         amount_description_label.grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
-        amount_entry = ttk.Entry(item_selection_frame, width=5)
-        amount_entry.grid(row=0, column=3, padx=5, pady=5, sticky="e")
+        validate_command = self.loot_window.register(validate_positive_integer)
+
+        self.loot_multiplier_entry = ttk.Entry(item_selection_frame, width=5, validate="key",
+                                 validatecommand=(validate_command, "%P"))
+        self.loot_multiplier_entry.insert(0, "1")
+        self.loot_multiplier_entry.grid(row=0, column=3, padx=5, pady=5, sticky="e")
 
         search_entry.bind("<KeyRelease>", lambda event: self.update_treeview(event, search_var))
 
@@ -171,6 +216,11 @@ class OnDemandWindows:
 
         ###################################
 
+
+        columns = ("ID", "Amount","Name", "Type", "Weight", "Value")
+        column_widths = [50, 50, 150, 50, 55, 55]
+
+
         self.item_list3 = ttk.Treeview(item_view_frame, columns=columns, show="headings", height=7,
                                       style="Custom.Treeview")
         for i, col in enumerate(columns):
@@ -186,6 +236,7 @@ class OnDemandWindows:
         scrollbar.pack(side="right", fill="y", pady=5)
 
         self.item_list2.bind("<Double-1>", lambda event: self.add_item_to_loot_list(event))
+        self.item_list3.bind("<Double-1>", lambda event: self.remove_item_to_loot_list(event))
 
         ###################################
 
@@ -198,29 +249,47 @@ class OnDemandWindows:
         y_pos = 0
 
         for chara_id, chara in current_party_dict.items():
-            give_button = ttk.Button(loot_split_frame, text=chara.Base_Name, width=15)
+            give_button = ttk.Button(loot_split_frame, text=chara.Base_Name, width=15,
+                                     command=lambda chara=chara: give_selected_items_to_player(chara))
             give_button.grid(row=0, column=y_pos, padx=4, pady=0, sticky="nsew")
             y_pos += 1
+
+        clear_loot_list_button = ttk.Button(loot_split_frame, text="Clear List", command=clear_selection_list)
+        clear_loot_list_button.grid(row=1,column=0, columnspan=4, padx=4, pady=5, sticky="nsew")
 
     def add_item_to_loot_list(self, event):
         tree = event.widget
         selected_item = tree.focus()  # Returns the ID of the clicked item
         item_id = tree.item(selected_item, "values")[0]
 
-        self.current_loot_list.append(item_id)
+        multiplier = int(self.loot_multiplier_entry.get())
+
+        for i in range(multiplier):
+            self.current_loot_list.append(item_id)
+
         self.refresh_current_loot_window()
+
+    def remove_item_to_loot_list(self, event):
+        tree = event.widget
+        selected_item = tree.focus()  # Returns the ID of the clicked item
+        item_id = tree.item(selected_item, "values")[0]
+
+        if item_id in self.current_loot_list:
+            self.current_loot_list.remove(item_id)
+            self.refresh_current_loot_window()
 
     def refresh_current_loot_window(self):
         for item in self.item_list3.get_children():
             self.item_list3.delete(item)
 
-        item_list: List[Item] = []
+        count_dict = Counter(self.current_loot_list)
+        final_dict = {}
 
-        for item_id in self.current_loot_list:
-            item_list.append(item_database.Item_Dictionary[int(item_id)])
+        for item_id, amount in count_dict.items():
+            final_dict[item_database.Item_Dictionary[int(item_id)]] = amount
 
-        for item in item_list:
-            entries = (item.ID, item.Item_Name, item.Item_Type, item.Item_Weight, item.Item_Value)
+        for item, amount in final_dict.items():
+            entries = (item.ID, amount, item.Item_Name, item.Item_Type, item.Item_Weight, item.Item_Value)
             list_item = self.item_list3.insert("", "end", values=entries)
             self.Main_Item_BaseItem_Dict[list_item] = item
 

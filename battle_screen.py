@@ -467,7 +467,8 @@ class BattleScreenManager:
     def get_list_of_maps(self):
         images_folder_path = os.path.join(os.getcwd(), 'maps')
         png_files = glob.glob(os.path.join(images_folder_path, '*.png'))
-        file_names = [os.path.basename(file) for file in png_files]
+        jpg_files = glob.glob(os.path.join(images_folder_path, '*.jpg'))
+        file_names = [os.path.basename(file) for file in png_files + jpg_files]
 
         return file_names
 
