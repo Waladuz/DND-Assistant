@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ character.name }} - Character Sheet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333333;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #555555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #dddddd;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .button-cell button {
+            width: 100%;
+            height: 100%;
+            padding: 10px 20px;
+            color: white;
+            background-color: #00DDDD;
+            box-sizing: border-box; /* Ensures padding doesn't break layout */
+        }
+
+        .button-hell button {
+            padding: 10px 20px;
+            color: white;
+            border-radius: 5px;
+            background-color: #DD0000;
+            box-sizing: border-box; /* Ensures padding doesn't break layout */
+        }
+
+        .logout-btn {
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            background-color: #007BFF;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logout-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .scrollable {
+            max-height: 200px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ character.name }}</h1>
+        <p><strong>HP:</strong> {{ character.hp }}</p>
+        <p><strong>Race:</strong> {{ character.race }}</p>
+        <p><strong>Class:</strong> {{ character.class }}</p>
+        <p><strong>Level:</strong> {{ character.level }}</p>
+        <p><strong>Experience:</strong> {{ character.exp }}</p>
+
+        <h2>Abilities</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ability</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ability, value in character.attributes.items() %}
+                <tr>
+                    <td>{{ ability }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Skills</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Skill</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for skill, value in character.skills.items() %}
+                <tr>
+                    <td>{{ skill }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Items</h2>
+        <div class="scrollable">
+        <form action="{{ url_for('remove_item', character_id=character_id) }}" method="POST">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Info</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item, details in inventory.items() %}
+                    <tr>
+                        <td>{{ item }}</td>
+                        <td>{{ details.type }}</td>
+                        <td>{{ details.amount }}</td>
+                        <td>{{ details.info }}</td>
+                        <td class="button-hell">
+                            <button type="submit" name="item_id" value="{{ details.item_id}}">Remove</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+        </div>
+
+        <h3>Add Item</h3>
+        <div class="scrollable">
+        <form action="{{ url_for('add_item', character_id=character_id) }}" method="POST">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item ID</th>
+                        <th>Item Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in all_items %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.name }}</td>
+                        <td class="button-cell">
+                            <button type="submit" name="item_id" value="{{ item.id }}">Add</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+        </div>
+
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</body>
+</html>
