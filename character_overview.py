@@ -117,7 +117,7 @@ class CharacterOverview:
 
             # LoadImage
             image_path = rf"images\{chara.Portrait_ID}.png"
-            image = Image.open(image_path).resize((150, 150))
+            image = Image.open(image_path).resize((200, 200))
             tk_image = ImageTk.PhotoImage(image)
 
             portrait_label = ttk.Label(portrait_frame, image=tk_image, relief="flat")

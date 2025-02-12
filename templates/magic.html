@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Magic</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .table-container {
+            display: flex; /* Flexbox layout */
+            justify-content: center; /* Center both tables */
+            gap: 20px; /* Space between tables */
+            margin-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 500px; /* Adjust as needed */
+            margin: auto; /* Center table horizontally */
+        }
+        th, td {
+            border: 2px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .spell-container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .spell {
+            border: 2px solid #333;
+            background-color: #e0e0e0;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .spell-header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+        }
+
+        .spell-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .spell-info div {
+            background-color: #ffffff;
+            padding: 8px;
+            border-radius: 5px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #ccc;
+        }
+
+        .spell-description {
+            padding: 10px;
+            font-size: 14px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 0 0 5px 5px;
+            text-align: left;
+        }
+
+        .addbutton button {
+            width: 100%;
+            height: 100%;
+            padding: 10px 20px;
+            color: white;
+            background-color: #00DDDD;
+            box-sizing: border-box; /* Ensures padding doesn't break layout */
+        }
+
+        .reducebutton button {
+            width: 100%;
+            height: 100%;
+            padding: 10px 20px;
+            color: white;
+            background-color: #DD0000;
+            box-sizing: border-box; /* Ensures padding doesn't break layout */
+        }
+
+
+        .accordion {
+            background-color: #007bff;
+            height: 150px;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .active, .accordion:hover {
+            background-color: #0056b3;
+        }
+
+        .panel {
+            padding: 0 15px;
+            display: none;
+            background-color: white;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+    <h1>{{ character.name }}</h1>
+        <p><strong>HP:</strong> {{ character.hp }}</p>
+        <p><strong>Race:</strong> {{ character.race }}</p>
+        <p><strong>Class:</strong> {{ character.class }}</p>
+        <p><strong>Level:</strong> {{ character.level }}</p>
+        <p><strong>Experience:</strong> {{ character.exp }}</p>
+
+
+    <h1>Magic Points</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Level</th>
+                <th>MP</th>
+                <th>+1</th>
+                <th>-1</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mp in mptable %}
+            <tr>
+                <td>{{ mp.level }}</td>
+                <td id="mp_{{ mp.level }}">  {{ mp.amount }}</td>
+                <td class="addbutton">
+                    <button onclick="updateValue('{{ mp.level }}', 1)">+1</button>
+                </td>
+                <td class="reducebutton">
+                    <button onclick="updateValue('{{ mp.level }}', -1)">-1</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function updateValue(level, amount) {
+            fetch('/change_mp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ level: level, amount: amount })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("mp_" + level).innerText = data.new_value;
+                } else {
+                    alert("Error updating value");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+
+    <h1>Spells</h1>
+
+    <div class="spell-container">
+        {% for spell in spells %}
+        <button class="accordion">{{ spell.name }} (Lvl. {{spell.level}})</button>
+        <div class="panel">
+        <div class="spell">
+            <div class="spell-header">{{ spell.name }}</div>
+                <div class="spell-info">
+                    <div><strong>Level:</strong> {{ spell.level }}</div>
+                    <div><strong>School:</strong> {{ spell.school }}</div>
+                    <div><strong>Duration:</strong> {{ spell.duration }}</div>
+                    <div><strong>Range:</strong> {{ spell.range }}</div>
+                    <div><strong>AOE:</strong> {{ spell.aoe }}</div>
+                    <div><strong>Save:</strong> {{ spell.save }}</div>
+                    <div><strong>Damage:</strong> {{ spell.damage }}</div>
+                </div>
+                <div class="spell-description">
+                    <p>{{ spell.description | bold_dice | safe }}</p>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // JavaScript for accordion functionality
+        var acc = document.getElementsByClassName("accordion");
+        for (var i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        }
+    </script>
+
+
+</body>
+</html>

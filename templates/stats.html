@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .table-container {
+            display: flex; /* Flexbox layout */
+            justify-content: center; /* Center both tables */
+            gap: 20px; /* Space between tables */
+            margin-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 300px; /* Set a fixed width or let it adjust */
+        }
+        th, td {
+            border: 2px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+        <h1>{{ character.name }}</h1>
+        <p><strong>HP:</strong> {{ character.hp }}</p>
+        <p><strong>Race:</strong> {{ character.race }}</p>
+        <p><strong>Class:</strong> {{ character.class }}</p>
+        <p><strong>Level:</strong> {{ character.level }}</p>
+        <p><strong>Experience:</strong> {{ character.exp }}</p>
+
+    <div class="table-container">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ability</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ability, value in character.attributes.items() %}
+                    <tr>
+                        <td>{{ ability }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for skill, value in character.skills.items() %}
+                    <tr>
+                        <td>{{ skill }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </div>
+</div>
+</body>
+</html>

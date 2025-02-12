@@ -66,7 +66,9 @@ class Armor(Item):
         self.Armor_StealthReduction = (self.Item_Data[11] == "x")
 
     def get_details_as_text(self, chara) -> str:
-        return f'AC: {self.get_modified_armor_class(chara)}, {self.Armor_Type}, {self.get_additional_info_as_text()}'
+        return (f'AC: {self.get_modified_armor_class(chara)[0]} '
+                f'({self.get_modified_armor_class(chara)[1]:+d}), '
+                f'{self.Armor_Type}, {self.get_additional_info_as_text()}')
 
     def get_modified_armor_class(self, chara):
         total_amount = int(self.Armor_ArmorClass)

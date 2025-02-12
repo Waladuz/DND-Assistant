@@ -21,6 +21,31 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
+        .container2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .btn {
+            padding: 10px;
+            font-size: 24px;
+            width: 100%;
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+            border: 5px solid black;  /* Black Border */
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+
         h1, h2 {
             text-align: center;
             color: #333333;
@@ -109,95 +134,26 @@
         <p><strong>Level:</strong> {{ character.level }}</p>
         <p><strong>Experience:</strong> {{ character.exp }}</p>
 
-        <h2>Abilities</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Ability</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ability, value in character.attributes.items() %}
-                <tr>
-                    <td>{{ ability }}</td>
-                    <td>{{ value }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <h2>Skills</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Skill</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for skill, value in character.skills.items() %}
-                <tr>
-                    <td>{{ skill }}</td>
-                    <td>{{ value }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <h2>Items</h2>
-        <div class="scrollable">
-        <form action="{{ url_for('remove_item', character_id=character_id) }}" method="POST">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Info</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item, details in inventory.items() %}
-                    <tr>
-                        <td>{{ item }}</td>
-                        <td>{{ details.type }}</td>
-                        <td>{{ details.amount }}</td>
-                        <td>{{ details.info }}</td>
-                        <td class="button-hell">
-                            <button type="submit" name="item_id" value="{{ details.item_id}}">Remove</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="container2">
+        <form action="/stats" method="POST">
+            <input type="hidden" name="character_id" value="{{ character_id }}">
+            <button class="btn" type="submit">Stats</button>
         </form>
-        </div>
-
-        <h3>Add Item</h3>
-        <div class="scrollable">
-        <form action="{{ url_for('add_item', character_id=character_id) }}" method="POST">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item ID</th>
-                        <th>Item Name</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in all_items %}
-                    <tr>
-                        <td>{{ item.id }}</td>
-                        <td>{{ item.name }}</td>
-                        <td class="button-cell">
-                            <button type="submit" name="item_id" value="{{ item.id }}">Add</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <form action="/magic" method="POST">
+            <input type="hidden" name="character_id" value="{{ character_id }}">
+            <button class="btn" type="submit">Magic</button>
+        </form>
+        <form action="/bonus" method="POST">
+            <input type="hidden" name="character_id" value="{{ character_id }}">
+            <button class="btn" type="submit">Bonus</button>
+        </form>
+            <form action="/inventory" method="POST">
+            <input type="hidden" name="character_id" value="{{ character_id }}">
+            <button class="btn" type="submit">Inventory</button>
+        </form>
+            <form action="/additem" method="POST">
+            <input type="hidden" name="character_id" value="{{ character_id }}">
+            <button class="btn" type="submit">Add Item</button>
         </form>
         </div>
 
