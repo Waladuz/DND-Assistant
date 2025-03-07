@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container2 {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            overflow-x: auto; /* Ensures scrolling on small screens */
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .table-container {
+            overflow-x: auto; /* Enables horizontal scrolling for small screens */
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            white-space: normal; /* Prevents wrapping */
+            max-width: 150px;
+            word-wrap: break-word; /* Wraps long words */
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Responsive Table for Small Screens */
+        @media (max-width: 600px) {
+            table {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+            }
+            thead {
+                display: none;
+            }
+            tbody, tr, td {
+                display: block;
+                width: 100%;
+            }
+            tr {
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                background-color: white;
+                padding: 10px;
+            }
+            td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+            }
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 50%;
+                text-align: left;
+                font-weight: bold;
+            }
+        }
+
+        /* Mobile-friendly button */
+        button {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        .button_equip {
+            background-color: #2935e3;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #c9302c;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container2">
+        <h1>{{ character.name }}</h1>
+        <p><strong>HP:</strong> {{ character.hp }}</p>
+        <p><strong>Race:</strong> {{ character.race }}</p>
+        <p><strong>Class:</strong> {{ character.class }}</p>
+        <p><strong>Level:</strong> {{ character.level }}</p>
+        <p><strong>Experience:</strong> {{ character.exp }}</p>
+
+
+        <h2>Equipment - Weapon</h2>
+
+        <div class="table-container">
+            <table id="weaponTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Damage</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for weapon in weaponlist %}
+                    <tr id="wep_row-{{ weapon.id }}">
+                        <td data-label="Name">{{ weapon.name }}</td>
+                        <td data-label="Type">{{ weapon.type }}</td>
+                        <td data-label="Damage">{{ weapon.damage }}</td>
+                        <td data-label="Description">{{ weapon.info }}</td>
+                        <td data-label="Action">
+                            <button onclick="unEquipWeapon('{{ weapon.id }}')">Un-equip</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        <h2 id="headerText">Equipment - Armor (AC: {{current_ac}})</h2>
+
+        <div class="table-container">
+            <table id="armorTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>AC</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for armor in armorlist %}
+                    <tr id="wep_row-{{ armor.id }}">
+                        <td data-label="Name">{{ armor.name }}</td>
+                        <td data-label="AC">{{ armor.ac }}</td>
+                        <td data-label="Description">{{ armor.info }}</td>
+                        <td data-label="Action">
+                            <button onclick="unEquipWeapon('{{ armor.id }}')">Un-equip</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        <h2>Character Inventory</h2>
+
+        <div class="table-container">
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item, details in inventory.items() %}
+                    <tr id="row-{{ details.item_id }}">
+                        <td data-label="Action">
+                            <button onclick="removeItem('{{ details.item_id }}')">Remove</button>
+                            {% if details.type == "weapon" or details.type == "armor" %}
+                            <button class="button_equip" onclick="equipItem('{{ details.item_id }}')">Equip</button>
+                            {% endif %}
+                        </td>
+                        <td data-label="Name">{{ item }}</td>
+                        <td data-label="Amount" id="amount-{{ details.item_id }}">{{ details.amount }}</td>
+                        <td data-label="Type">{{ details.type }}</td>
+                        <td data-label="Description">{{ details.info }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function removeItem(itemId) {
+            fetch('/remove_item', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item_id: itemId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateInventoryTable(data.inventory);
+                    updateWeaponTable(data.weaponlist);
+                    updateArmorTable(data.armorlist);
+
+                    document.getElementById("headerText").innerText = `Equipment - Armor (AC: ${data.current_ac})`;
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function equipItem(itemId) {
+            fetch('/equip_item', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item_id: itemId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateInventoryTable(data.inventory);
+                    updateWeaponTable(data.weaponlist);
+                    updateArmorTable(data.armorlist);
+
+                    document.getElementById("headerText").innerText = `Equipment - Armor (AC: ${data.current_ac})`;
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function unEquipWeapon(itemId) {
+            fetch('/unequip_item', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item_id: itemId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateInventoryTable(data.inventory);
+                    updateWeaponTable(data.weaponlist);
+                    updateArmorTable(data.armorlist);
+
+                    document.getElementById("headerText").innerText = `Equipment - Armor (AC: ${data.current_ac})`;
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function updateWeaponTable(weaponlist) {
+            let weaponTableBody = document.querySelector("#weaponTable tbody");
+                weaponTableBody.innerHTML = ""; // Clear current table content
+
+                weaponlist.forEach(weapon => {
+                    let row = `
+                        <tr id="shop-row-${weapon.id}">
+                            <td>${weapon.name}</td>
+                            <td>${weapon.type}</td>
+                            <td>${weapon.damage}</td>
+                            <td>${weapon.info}</td>
+                            <td>
+                                <button class="remove-btn" onclick="unEquipWeapon(${weapon.id})">Un-Equip</button>
+                            </td>
+                        </tr>`;
+                    weaponTableBody.innerHTML += row;
+                });
+        }
+
+        function updateArmorTable(armorlist) {
+            let armorTableBody = document.querySelector("#armorTable tbody");
+                armorTableBody.innerHTML = ""; // Clear current table content
+
+                armorlist.forEach(armor => {
+                    let row = `
+                        <tr id="shop-row-${armor.id}">
+                            <td>${armor.name}</td>
+                            <td>${armor.ac}</td>
+                            <td>${armor.info}</td>
+                            <td>
+                                <button class="remove-btn" onclick="unEquipWeapon(${armor.id})">Un-Equip</button>
+                            </td>
+                        </tr>`;
+                    armorTableBody.innerHTML += row;
+                });
+        }
+
+
+        function updateInventoryTable(inventory) {
+            let inventoryTableBody = document.querySelector("#inventoryTable tbody");
+            inventoryTableBody.innerHTML = ""; // Clear current table content
+
+            Object.entries(inventory).forEach(([itemName, details]) => {
+                let row = `
+                    <tr id="row-${details.item_id}">
+                        ${createActionButtons(details)}
+                        <td data-label="Name">${itemName}</td>
+                        <td data-label="Amount" id="amount-${details.item_id}">${details.amount}</td>
+                        <td data-label="Type">${details.type}</td>
+                        <td data-label="Description">${details.info}</td>
+                    </tr>`;
+                inventoryTableBody.innerHTML += row;
+            });
+        }
+
+        function createActionButtons(details) {
+            let actionCell = `
+                <td data-label="Action">
+                    <button onclick="removeItem('${details.item_id}')">Remove</button>
+            `;
+
+            // Add "Equip" button if type is "weapon" or "armor"
+            if (details.type.toLowerCase() === "weapon" || details.type.toLowerCase() === "armor") {
+                actionCell += `<button class="button_equip" onclick="equipItem('${details.item_id}')">Equip</button>`;
+            }
+
+            actionCell += `</td>`; // Close <td> tag
+
+            return actionCell;
+        }
+
+    </script>
+
+
+</body>
+</html>

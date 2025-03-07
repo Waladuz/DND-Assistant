@@ -1,8 +1,12 @@
 import sqlite3
+
+import item
+import shared_data
 import shared_data as sd
 from item import item_database
 import re
 import random
+from typing import Dict, List
 
 
 class Character:
@@ -86,7 +90,13 @@ class Character:
 
         self.Spells = []
 
+        self.Shopping_List: List[item.Item] = []
+
+        self.Magic_Points: Dict[int, int] = {}
+        self.Max_Magic_Points: Dict[int, int] = {}
+
         self.Temp_Coordinate = (0, 0)
+        self.set_magic_points()
 
         self.recalculate_arrays()
         self.load_spells_from_db()
@@ -126,6 +136,42 @@ class Character:
             self.Skill_Stealth,
             self.Skill_Survival
         ]
+
+    def add_item_to_shopping_cart(self, new_item: item.Item):
+        if new_item in self.Shopping_List:
+            return
+
+        self.Shopping_List.append(new_item)
+        list(set(self.Shopping_List))
+
+    def remove_item_to_shopping_cart(self, new_item: item.Item):
+        if new_item not in self.Shopping_List:
+            return
+
+        self.Shopping_List.remove(new_item)
+
+    def set_magic_points(self):
+        if self.Base_Class not in shared_data.MP_BY_CLASS.keys():
+            return
+
+        mp_list: List[int] = shared_data.MP_BY_CLASS[self.Base_Class][int(self.Base_Level)]
+        self.Magic_Points.clear()
+        self.Max_Magic_Points.clear()
+
+        for i in range(len(mp_list)):
+            self.Max_Magic_Points[i + 1] = mp_list[i]
+            self.Magic_Points[i + 1] = mp_list[i]
+
+    def change_magic_points(self, level: int, amount: int):
+        if len(self.Magic_Points) == 0 or level not in list(range(1, 21)):
+            return
+
+        current_value = self.Magic_Points[level]
+        current_max = self.Max_Magic_Points[level]
+
+        current_value += amount
+        current_value = max(0, min(current_value, current_max))
+        self.Magic_Points[level] = current_value
 
     def get_current_ac(self):
         text = ""

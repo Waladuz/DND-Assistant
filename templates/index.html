@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Flask UI</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 20px;
+            font-size: 24px;
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+            border: 5px solid black;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        #content-frame {
+            width: 80%;
+            height: auto;
+            min-height: 200px;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            background-color: white;
+            overflow: auto;
+        }
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 2px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Buttons Section -->
+    <div class="container">
+        <button class="btn" onclick="loadContent('items')">Button 1</button>
+        <button class="btn" onclick="loadContent('text1')">Button 2</button>
+        <button class="btn" onclick="loadContent('form')">Button 3</button>
+        <button class="btn" onclick="loadContent('text2')">Button 4</button>
+    </div>
+
+    <!-- Dynamic Content Frame -->
+    <div id="content-frame">
+        Click a button to load content...
+    </div>
+
+    <script>
+        function loadContent(contentType) {
+            fetch(`/get_content/${contentType}`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("content-frame").innerHTML = data;
+            })
+            .catch(error => console.error("Error loading content:", error));
+        }
+    </script>
+
+</body>
+</html>

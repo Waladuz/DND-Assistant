@@ -107,7 +107,8 @@ class OnDemandWindows:
         column_widths = [50, 150, 50, 55, 55]
 
         # Create the Treeview widget with 4 columns
-        self.item_list = ttk.Treeview(result_frame, columns=columns, show="headings", height=15, style="Custom.Treeview")
+        self.item_list = ttk.Treeview(result_frame, columns=columns, show="headings", height=15,
+                                      style="Custom.Treeview")
         for i, col in enumerate(columns):
             self.item_list.heading(col, text=col)
             self.item_list.column(col, width=column_widths[i], anchor="center")
@@ -187,7 +188,7 @@ class OnDemandWindows:
         validate_command = self.loot_window.register(validate_positive_integer)
 
         self.loot_multiplier_entry = ttk.Entry(item_selection_frame, width=5, validate="key",
-                                 validatecommand=(validate_command, "%P"))
+                                               validatecommand=(validate_command, "%P"))
         self.loot_multiplier_entry.insert(0, "1")
         self.loot_multiplier_entry.grid(row=0, column=3, padx=5, pady=5, sticky="e")
 
@@ -201,7 +202,7 @@ class OnDemandWindows:
 
         # Create the Treeview widget with 4 columns
         self.item_list2 = ttk.Treeview(result_frame, columns=columns, show="headings", height=7,
-                                      style="Custom.Treeview")
+                                       style="Custom.Treeview")
         for i, col in enumerate(columns):
             self.item_list2.heading(col, text=col)
             self.item_list2.column(col, width=column_widths[i], anchor="center")
@@ -216,13 +217,11 @@ class OnDemandWindows:
 
         ###################################
 
-
-        columns = ("ID", "Amount","Name", "Type", "Weight", "Value")
+        columns = ("ID", "Amount", "Name", "Type", "Weight", "Value")
         column_widths = [50, 50, 150, 50, 55, 55]
 
-
         self.item_list3 = ttk.Treeview(item_view_frame, columns=columns, show="headings", height=7,
-                                      style="Custom.Treeview")
+                                       style="Custom.Treeview")
         for i, col in enumerate(columns):
             self.item_list3.heading(col, text=col)
             self.item_list3.column(col, width=column_widths[i], anchor="center")
@@ -255,7 +254,7 @@ class OnDemandWindows:
             y_pos += 1
 
         clear_loot_list_button = ttk.Button(loot_split_frame, text="Clear List", command=clear_selection_list)
-        clear_loot_list_button.grid(row=1,column=0, columnspan=4, padx=4, pady=5, sticky="nsew")
+        clear_loot_list_button.grid(row=1, column=0, columnspan=4, padx=4, pady=5, sticky="nsew")
 
     def add_item_to_loot_list(self, event):
         tree = event.widget
@@ -604,15 +603,19 @@ class OnDemandWindows:
 
         # Fix this for non-mp classes
         if chara.Base_Class in shared_data.MP_BY_CLASS:
-            mp_by_level = shared_data.MP_BY_CLASS[chara.Base_Class][int(chara.Base_Level)]
+            mp_by_level = list(chara.Max_Magic_Points.values())
+            mp_true = list(chara.Magic_Points.values())
+
+            print(mp_true)
         else:
             mp_by_level = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            mp_true = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         for i in range(9):
             # Create an entry field for each skill
             entry = ttk.Entry(base_frame, width=2)
             entry.delete(0, tk.END)
-            entry.insert(0, f"{mp_by_level[i]}")
+            entry.insert(0, f"{mp_true[i]}")
             entry.grid(row=1, column=2 * i, padx=5, pady=5, sticky="w")
 
             label = ttk.Label(base_frame, text=f"{mp_by_level[i]}")
@@ -673,14 +676,44 @@ class OnDemandWindows:
 
         self.magic_window.mainloop()
 
+    def update_magic_treeview(self, event, search_var):
+        for item in self.submenu_spell_list.get_children():
+            self.submenu_spell_list.delete(item)
+
+        spell_dictionary = shared_data.magic_table.id_magic_dictionary
+        self.Listitem_Spell_Submenu_Dict = {}
+        final_spell_list: List[shared_data.Spell] = []
+
+        all_spell_list: List[shared_data.Spell] = list(spell_dictionary.values())
+        if search_var.get() != "":
+            final_spell_list = [spell for spell in all_spell_list
+                                if search_var.get().lower() in spell.Magic_Name.lower()]
+        else:
+            final_spell_list = all_spell_list
+
+        for spell in final_spell_list:
+            list_item = self.submenu_spell_list.insert("", "end",
+                                                       values=(spell.Magic_ID, spell.Magic_Name, spell.Magic_Level))
+            self.Listitem_Spell_Submenu_Dict[list_item] = spell
+
     def open_add_spell_window(self, chara):
         spell_browse_window = tk.Toplevel(self.magic_window)
         spell_browse_window.title(f"Add A Spell ({chara.Base_Name})")
 
         self.position_window(self.magic_window, spell_browse_window)
 
+        frame = ttk.LabelFrame(spell_browse_window, text="Search for Spell", width=200, padding=(10, 10))
+        frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
+        description_label = ttk.Label(frame, text="Type Spell Name")
+        description_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+
+        search_var = tk.StringVar()
+        search_entry = ttk.Entry(frame, textvariable=search_var)
+        search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="e")
+
         base_frame = ttk.LabelFrame(spell_browse_window, text="Spell List", width=200, padding=(10, 10))
-        base_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        base_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
         sub_menu_columns = ("ID", "Name", "Lvl")
         sub_menu_column_widths = (50, 150, 50)
@@ -693,17 +726,6 @@ class OnDemandWindows:
             self.submenu_spell_list.column(col, width=sub_menu_column_widths[i], anchor="center")
             i += 1
 
-        spell_dictionary = shared_data.magic_table.id_magic_dictionary
-        self.Listitem_Spell_Submenu_Dict = {}
-
-        for item in self.submenu_spell_list.get_children():
-            self.submenu_spell_list.delete(item)
-
-        for id, spell in spell_dictionary.items():
-            list_item = self.submenu_spell_list.insert("", "end",
-                                                       values=(id, spell.Magic_Name, spell.Magic_Level))
-            self.Listitem_Spell_Submenu_Dict[list_item] = spell
-
         # Create a vertical scrollbar for the Treeview
         scrollbar = ttk.Scrollbar(base_frame, orient="vertical", command=self.submenu_spell_list.yview)
         self.submenu_spell_list.configure(yscrollcommand=scrollbar.set)
@@ -713,10 +735,13 @@ class OnDemandWindows:
         scrollbar.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
         action_frame = ttk.LabelFrame(spell_browse_window, text="", width=200, padding=(10, 10))
-        action_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+        action_frame.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
 
         add_magic_button = ttk.Button(action_frame, text="Add", command=lambda: self.add_spell_to_chara(chara))
         add_magic_button.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+
+        search_entry.bind("<KeyRelease>", lambda event: self.update_magic_treeview(event, search_var))
+        self.update_magic_treeview(None, search_var)
 
     def remove_spell_to_chara(self, chara):
         selected_items = self.magic_spell_list.selection()
@@ -839,8 +864,13 @@ class OnDemandWindows:
             label = ttk.Label(base_frame, text=f"Level {level}")
             label.grid(row=i, column=0, padx=5, pady=5, sticky="e")
 
-            label = ttk.Label(base_frame, text=f"{skill}")
+            print(skill)
+
+            label = ttk.Label(base_frame, text=f"{skill["name"]}")
             label.grid(row=i, column=1, padx=5, pady=5, sticky="w")
+
+            ToolTip(label, msg=lambda skill=skill: skill["description"], delay=.2)
+
             i += 1
 
         notes_frame = ttk.LabelFrame(self.level_bonus_window, text="Notes", width=200, padding=(10, 10))

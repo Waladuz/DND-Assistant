@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bonus</title>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .table-container {
+            display: flex; /* Flexbox layout */
+            justify-content: center; /* Center both tables */
+            gap: 20px; /* Space between tables */
+            margin-top: 20px;
+        }
+
+        .accordion {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .active, .accordion:hover {
+            background-color: #0056b3;
+        }
+
+        .panel {
+            padding: 0 15px;
+            display: none;
+            background-color: white;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>{{ character.name }}</h1>
+        <p><strong>HP:</strong> {{ character.hp }}</p>
+        <p><strong>Race:</strong> {{ character.race }}</p>
+        <p><strong>Class:</strong> {{ character.class }}</p>
+        <p><strong>Level:</strong> {{ character.level }}</p>
+        <p><strong>Experience:</strong> {{ character.exp }}</p>
+
+    <h2>Character Skills by Level</h2>
+
+        {% for bonus in bonus_list %}
+        <button class="accordion">Level {{ bonus.level }}</button>
+        <div class="panel">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ bonus.name }}</td>
+                        <td>{{ bonus.description }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+
+    <script>
+        // JavaScript for accordion functionality
+        var acc = document.getElementsByClassName("accordion");
+        for (var i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        }
+    </script>
+</div>
+
+</body>
+</html>

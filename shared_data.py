@@ -53,279 +53,1000 @@ DATABANK_SKILLS = {
 }
 
 SKILLS_BARBARIAN_SKILLNAME = {
-    1: "Rage, Unarmored Defense",
-    2: "Reckless Attack, Danger Sense",
-    3: "Primal Path",
-    4: "Ability Score Improvement",
-    5: "Extra Attack, Fast Movement⁠",
-    6: "Path feature",
-    7: "Feral Instinct",
-    8: "Ability Score Improvement",
-    9: "Brutal Critical (1 die)",
-    10: "Path feature",
-    11: "Relentless⁠ Rage",
-    12: "Ability Score Improvement",
-    13: "Brutal Critical (2 dice)",
-    14: "Path feature",
-    15: "Persistent Rage",
-    16: "Ability Score Improvement",
-    17: "Brutal Critical (3 dice)",
-    18: "Indomitable Might",
-    19: "Ability Score Improvement",
-    20: "Primal Champion⁠"
+    1: {
+        "name": "Rage, Unarmored Defense",
+        "description": "Rage grants bonus damage and resistance while raging. Unarmored Defense gives AC equal to 10 + Dex mod + Con mod when not wearing armor."
+    },
+    2: {
+        "name": "Reckless Attack, Danger Sense",
+        "description": "Reckless Attack allows attacking with advantage but gives enemies advantage on attacks against you. Danger Sense grants advantage on Dex saves against visible effects."
+    },
+    3: {
+        "name": "Primal Path",
+        "description": "Choose a Barbarian subclass (e.g., Berserker, Totem Warrior), granting unique abilities."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "Extra Attack, Fast Movement",
+        "description": "Attack twice per turn instead of once. Your movement speed increases by 10 feet when not wearing heavy armor."
+    },
+    6: {
+        "name": "Path Feature",
+        "description": "Gain a new ability from your Primal Path subclass."
+    },
+    7: {
+        "name": "Feral Instinct",
+        "description": "Gain advantage on initiative rolls. If surprised, you can act normally if you enter rage first."
+    },
+    8: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "Brutal Critical (1 die)",
+        "description": "When you crit, roll one extra weapon damage die for extra damage."
+    },
+    10: {
+        "name": "Path Feature",
+        "description": "Gain a new ability from your Primal Path subclass."
+    },
+    11: {
+        "name": "Relentless Rage",
+        "description": "If reduced to 0 HP while raging, make a DC 10 Con save to drop to 1 HP instead. The DC increases with each use."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "Brutal Critical (2 dice)",
+        "description": "When you crit, roll two extra weapon damage dice for extra damage."
+    },
+    14: {
+        "name": "Path Feature",
+        "description": "Gain a new ability from your Primal Path subclass."
+    },
+    15: {
+        "name": "Persistent Rage",
+        "description": "Your rage now only ends if you fall unconscious or choose to end it."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "Brutal Critical (3 dice)",
+        "description": "When you crit, roll three extra weapon damage dice for extra damage."
+    },
+    18: {
+        "name": "Indomitable Might",
+        "description": "If your Strength check roll is lower than your Strength score, you can use your Strength score instead."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Primal Champion",
+        "description": "Your Strength and Constitution scores increase by 4 (max 24)."
+    }
 }
 
-SKILLS_BARD_SKILLNAME = {
-    1: "Spellcasting, Bardic Inspiration (d6)",
-    2: "Jack of All Trades, Song of Rest (d6)",
-    3: "Bard College, Expertise",
-    4: "Ability Score Improvement",
-    5: "Bardic Inspiration (d8), Font of Inspiration",
-    6: "Countercharm, Bard College feature",
-    7: "-",
-    8: "Ability Score Improvement",
-    9: "Song of Rest (d8)",
-    10: "Bardic Inspiration (d10), Expertise, Magical Secrets",
-    11: "-",
-    12: "Ability Score Improvement",
-    13: "Song of Rest (d10)",
-    14: "Magical Secrets, Bard College feature",
-    15: "Bardic Inspiration (d12)",
-    16: "Ability Score Improvement",
-    17: "Song of Rest (d12)",
-    18: "Magical Secrets",
-    19: "Ability Score Improvement",
-    20: "Superior Inspiration"
+SKILLS_BARD_SKILLNAME = SKILLS_BARD = {
+    1: {
+        "name": "Spellcasting, Bardic Inspiration (d6)",
+        "description": "You gain the ability to cast bard spells. Bardic Inspiration allows you to grant an ally a d6 that they can add to an ability check, attack roll, or saving throw."
+    },
+    2: {
+        "name": "Jack of All Trades, Song of Rest (d6)",
+        "description": "Jack of All Trades lets you add half your proficiency bonus to ability checks you're not proficient in. Song of Rest allows allies to regain extra hit points (d6) when they heal during a short rest."
+    },
+    3: {
+        "name": "Bard College, Expertise",
+        "description": "Choose a Bard College, gaining unique features. Expertise lets you double proficiency in two chosen skills."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "Bardic Inspiration (d8), Font of Inspiration",
+        "description": "Bardic Inspiration die increases to d8. Font of Inspiration lets you regain all Bardic Inspiration uses after a short or long rest."
+    },
+    6: {
+        "name": "Countercharm, Bard College Feature",
+        "description": "Countercharm grants allies advantage on saving throws against being frightened or charmed while you perform."
+    },
+    7: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    8: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "Song of Rest (d8)",
+        "description": "Song of Rest die increases to d8, granting additional healing during short rests."
+    },
+    10: {
+        "name": "Bardic Inspiration (d10), Expertise, Magical Secrets",
+        "description": "Bardic Inspiration die increases to d10. Gain two more Expertise skills. Magical Secrets allows you to learn two spells from any class."
+    },
+    11: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "Song of Rest (d10)",
+        "description": "Song of Rest die increases to d10, granting additional healing during short rests."
+    },
+    14: {
+        "name": "Magical Secrets, Bard College Feature",
+        "description": "Learn two more spells from any class. Gain another feature from your Bard College."
+    },
+    15: {
+        "name": "Bardic Inspiration (d12)",
+        "description": "Bardic Inspiration die increases to d12."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "Song of Rest (d12)",
+        "description": "Song of Rest die increases to d12, granting additional healing during short rests."
+    },
+    18: {
+        "name": "Magical Secrets",
+        "description": "Learn two more spells from any class."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Superior Inspiration",
+        "description": "If you have no Bardic Inspiration dice when you roll initiative, you regain one."
+    }
 }
+
 
 SKILLS_CLERIC_SKILLNAME = {
-    1: "Spellcasting, Divine Domain",
-    2: "Channel Divinity (1/rest), Divine Domain feature",
-    3: "-",
-    4: "Ability Score Improvement",
-    5: "Destroy Undead (CR 1/2)",
-    6: "Channel Divinity (2/rest), Divine Domain feature",
-    7: "-",
-    8: "Ability Score Improvement, Destroy Undead (CR 1), Divine Domain feature",
-    9: "-",
-    10: "Divine Intervention",
-    11: "Destroy Undead (CR 2)",
-    12: "Ability Score Improvement",
-    13: "-",
-    14: "Destroy Undead (CR 3)",
-    15: "-",
-    16: "Ability Score Improvement",
-    17: "Destroy Undead (CR 4), Divine Domain feature",
-    18: "Channel Divinity (3/rest)",
-    19: "Ability Score Improvement",
-    20: "Divine Intervention improvement"
+    1: {
+        "name": "Spellcasting, Divine Domain",
+        "description": "You gain the ability to cast cleric spells. Choose a Divine Domain, which grants unique features and spells."
+    },
+    2: {
+        "name": "Channel Divinity (1/rest), Divine Domain Feature",
+        "description": "Channel Divinity allows you to use divine power for special effects. Gain a feature from your Divine Domain."
+    },
+    3: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "Destroy Undead (CR 1/2)",
+        "description": "When you use Turn Undead, undead of CR 1/2 or lower are instantly destroyed if they fail their save."
+    },
+    6: {
+        "name": "Channel Divinity (2/rest), Divine Domain Feature",
+        "description": "You can now use Channel Divinity twice per rest. Gain another feature from your Divine Domain."
+    },
+    7: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    8: {
+        "name": "Ability Score Improvement, Destroy Undead (CR 1), Divine Domain Feature",
+        "description": "Increase one ability score by 2, or two ability scores by 1. Turn Undead now destroys undead of CR 1 or lower. Gain a new feature from your Divine Domain."
+    },
+    9: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    10: {
+        "name": "Divine Intervention",
+        "description": "You can call upon your deity for aid. Roll percentile dice, and if you roll under your cleric level, the deity intervenes."
+    },
+    11: {
+        "name": "Destroy Undead (CR 2)",
+        "description": "Turn Undead now destroys undead of CR 2 or lower."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    14: {
+        "name": "Destroy Undead (CR 3)",
+        "description": "Turn Undead now destroys undead of CR 3 or lower."
+    },
+    15: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "Destroy Undead (CR 4), Divine Domain Feature",
+        "description": "Turn Undead now destroys undead of CR 4 or lower. Gain a new feature from your Divine Domain."
+    },
+    18: {
+        "name": "Channel Divinity (3/rest)",
+        "description": "You can now use Channel Divinity three times per rest."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Divine Intervention Improvement",
+        "description": "If you fail your Divine Intervention roll, you automatically succeed once per week."
+    }
 }
 
 SKILLS_DRUID_SKILLNAME = {
-    1: "Druidic, Spellcasting",
-    2: "Wild Shape, Druid Circle",
-    3: "-",
-    4: "Wild Shape improvement, Ability Score Improvement",
-    5: "-",
-    6: "Druid Circle feature",
-    7: "-",
-    8: "Wild Shape improvement, Ability Score Improvement",
-    9: "-",
-    10: "Druid Circle feature",
-    11: "-",
-    12: "Ability Score Improvement",
-    13: "-",
-    14: "Druid Circle feature",
-    15: "-",
-    16: "Ability Score Improvement",
-    17: "-",
-    18: "Timeless Body, Beast Spells",
-    19: "Ability Score Improvement",
-    20: "Archdruid"
+    1: {
+        "name": "Druidic, Spellcasting",
+        "description": "You learn Druidic, the secret language of druids. You also gain the ability to cast druid spells."
+    },
+    2: {
+        "name": "Wild Shape, Druid Circle",
+        "description": "Wild Shape allows you to transform into a beast you’ve seen before. Choose a Druid Circle, which grants unique abilities."
+    },
+    3: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    4: {
+        "name": "Wild Shape Improvement, Ability Score Improvement",
+        "description": "You can now use Wild Shape twice per rest. Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    6: {
+        "name": "Druid Circle Feature",
+        "description": "Gain a new ability from your chosen Druid Circle."
+    },
+    7: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    8: {
+        "name": "Wild Shape Improvement, Ability Score Improvement",
+        "description": "Your Wild Shape improves, allowing stronger transformations. Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    10: {
+        "name": "Druid Circle Feature",
+        "description": "Gain a new ability from your chosen Druid Circle."
+    },
+    11: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    14: {
+        "name": "Druid Circle Feature",
+        "description": "Gain a new ability from your chosen Druid Circle."
+    },
+    15: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    18: {
+        "name": "Timeless Body, Beast Spells",
+        "description": "Timeless Body makes you age much slower. Beast Spells allow you to cast druid spells while in Wild Shape."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Archdruid",
+        "description": "You can use Wild Shape an unlimited number of times. You also ignore verbal, somatic, and material components of spells without cost."
+    }
 }
 
 SKILLS_FIGHTER_SKILLNAME = {
-    1: "Fighting Style, Second Wind",
-    2: "Action Surge (one use)",
-    3: "Martial Archetype",
-    4: "Ability Score Improvement",
-    5: "Extra Attack",
-    6: "Ability Score Improvement",
-    7: "Martial Archetype feature",
-    8: "Ability Score Improvement",
-    9: "Indomitable (one use)",
-    10: "Martial Archetype feature",
-    11: "Extra Attack (2)",
-    12: "Ability Score Improvement",
-    13: "Indomitable (two uses)",
-    14: "Ability Score Improvement",
-    15: "Martial Archetype feature",
-    16: "Ability Score Improvement",
-    17: "Action Surge (two uses), Indomitable (three uses)",
-    18: "Martial Archetype feature",
-    19: "Ability Score Improvement",
-    20: "Extra Attack (3)"
+    1: {
+        "name": "Fighting Style, Second Wind",
+        "description": "Choose a Fighting Style that enhances combat abilities (e.g., Archery, Defense, Great Weapon Fighting). Second Wind allows you to regain 1d10 + fighter level hit points as a bonus action once per short or long rest."
+    },
+    2: {
+        "name": "Action Surge (one use)",
+        "description": "You can take one additional action on your turn. This ability can be used once per short or long rest."
+    },
+    3: {
+        "name": "Martial Archetype",
+        "description": "Choose a Martial Archetype (e.g., Champion, Battle Master, Eldritch Knight), gaining unique features."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "Extra Attack",
+        "description": "You can attack twice when you take the Attack action."
+    },
+    6: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    7: {
+        "name": "Martial Archetype Feature",
+        "description": "Gain a new ability from your chosen Martial Archetype."
+    },
+    8: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "Indomitable (one use)",
+        "description": "You can reroll a failed saving throw. This ability can be used once per long rest."
+    },
+    10: {
+        "name": "Martial Archetype Feature",
+        "description": "Gain a new ability from your chosen Martial Archetype."
+    },
+    11: {
+        "name": "Extra Attack (2)",
+        "description": "You can attack three times when you take the Attack action."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "Indomitable (two uses)",
+        "description": "You can now use Indomitable twice per long rest."
+    },
+    14: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    15: {
+        "name": "Martial Archetype Feature",
+        "description": "Gain a new ability from your chosen Martial Archetype."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "Action Surge (two uses), Indomitable (three uses)",
+        "description": "You can now use Action Surge twice per short or long rest. You can now use Indomitable three times per long rest."
+    },
+    18: {
+        "name": "Martial Archetype Feature",
+        "description": "Gain a new ability from your chosen Martial Archetype."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Extra Attack (3)",
+        "description": "You can attack four times when you take the Attack action."
+    }
 }
 
 SKILLS_MONK_SKILLNAME = {
-    1: "Unarmored Defense, Martial Arts",
-    2: "Ki, Unarmored Movement",
-    3: "Monastic Tradition, Deflect Missiles",
-    4: "Ability Score Improvement, Slow Fall",
-    5: "Extra Attack, Stunning Strike",
-    6: "Ki-Empowered Strikes, Monastic Tradition feature",
-    7: "Evasion, Stillness of Mind",
-    8: "Ability Score Improvement",
-    9: "Unarmored Movement improvement",
-    10: "Purity of Body",
-    11: "Monastic Tradition feature",
-    12: "Ability Score Improvement",
-    13: "Tongue of the Sun and Moon",
-    14: "Diamond Soul",
-    15: "Timeless Body",
-    16: "Ability Score Improvement",
-    17: "Monastic Tradition feature",
-    18: "Empty Body",
-    19: "Ability Score Improvement",
-    20: "Perfect Self"
+    1: {
+        "name": "Unarmored Defense, Martial Arts",
+        "description": "Unarmored Defense grants AC equal to 10 + Dexterity mod + Wisdom mod when not wearing armor. Martial Arts allows you to use Dexterity instead of Strength for unarmed strikes and monk weapons, use a d4 for unarmed strike damage, and make an unarmed strike as a bonus action."
+    },
+    2: {
+        "name": "Ki, Unarmored Movement",
+        "description": "Ki grants you special abilities like Flurry of Blows, Patient Defense, and Step of the Wind. Unarmored Movement increases your speed when not wearing armor."
+    },
+    3: {
+        "name": "Monastic Tradition, Deflect Missiles",
+        "description": "Choose a Monastic Tradition (e.g., Way of the Open Hand, Shadow, or Four Elements). Deflect Missiles lets you reduce the damage from a ranged attack and potentially catch and throw the projectile."
+    },
+    4: {
+        "name": "Ability Score Improvement, Slow Fall",
+        "description": "Increase one ability score by 2, or two ability scores by 1. Slow Fall lets you reduce falling damage by five times your monk level."
+    },
+    5: {
+        "name": "Extra Attack, Stunning Strike",
+        "description": "You can attack twice when you take the Attack action. Stunning Strike lets you spend 1 ki point to attempt to stun an opponent until the end of your next turn."
+    },
+    6: {
+        "name": "Ki-Empowered Strikes, Monastic Tradition Feature",
+        "description": "Your unarmed strikes count as magical for overcoming resistance and immunity to nonmagical attacks. Gain a new feature from your Monastic Tradition."
+    },
+    7: {
+        "name": "Evasion, Stillness of Mind",
+        "description": "Evasion allows you to take no damage on a successful Dexterity saving throw and half damage on a failure. Stillness of Mind lets you end the charmed or frightened condition as an action."
+    },
+    8: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "Unarmored Movement Improvement",
+        "description": "You can now move along vertical surfaces and across liquids without falling during your turn."
+    },
+    10: {
+        "name": "Purity of Body",
+        "description": "You are immune to disease and poison."
+    },
+    11: {
+        "name": "Monastic Tradition Feature",
+        "description": "Gain a new ability from your Monastic Tradition."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "Tongue of the Sun and Moon",
+        "description": "You can understand and be understood by any creature that knows a language."
+    },
+    14: {
+        "name": "Diamond Soul",
+        "description": "You gain proficiency in all saving throws, and can spend 1 ki point to reroll a failed save."
+    },
+    15: {
+        "name": "Timeless Body",
+        "description": "You no longer suffer the effects of aging and cannot be aged magically."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "Monastic Tradition Feature",
+        "description": "Gain a new ability from your Monastic Tradition."
+    },
+    18: {
+        "name": "Empty Body",
+        "description": "You can spend 4 ki points to become invisible for 1 minute and resistant to all damage except force damage."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Perfect Self",
+        "description": "If you start combat with no ki points, you regain 4 ki points."
+    }
 }
 
 SKILLS_PALADIN_SKILLNAME = {
-    1: "Divine Sense, Lay on Hands",
-    2: "Fighting Style, Spellcasting, Divine Smite",
-    3: "Divine Health, Sacred Oath",
-    4: "Ability Score Improvement",
-    5: "Extra Attack",
-    6: "Aura of Protection",
-    7: "Sacred Oath feature",
-    8: "Ability Score Improvement",
-    9: "-",
-    10: "Aura of Courage",
-    11: "Improved Divine Smite",
-    12: "Ability Score Improvement",
-    13: "-",
-    14: "Cleansing Touch",
-    15: "Sacred Oath feature",
-    16: "Ability Score Improvement",
-    17: "-",
-    18: "Aura improvements",
-    19: "Ability Score Improvement",
-    20: "Sacred Oath feature"
+    1: {
+        "name": "Divine Sense, Lay on Hands",
+        "description": "Divine Sense allows you to detect celestials, fiends, and undead within 60 feet. Lay on Hands lets you heal a total number of hit points equal to your Paladin level × 5."
+    },
+    2: {
+        "name": "Fighting Style, Spellcasting, Divine Smite",
+        "description": "Choose a Fighting Style that enhances your combat abilities. Gain the ability to cast paladin spells. Divine Smite allows you to expend spell slots to deal radiant damage when you hit with a melee weapon."
+    },
+    3: {
+        "name": "Divine Health, Sacred Oath",
+        "description": "Divine Health makes you immune to disease. Sacred Oath grants unique abilities based on your chosen Oath."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "Extra Attack",
+        "description": "You can attack twice when you take the Attack action."
+    },
+    6: {
+        "name": "Aura of Protection",
+        "description": "You and allies within 10 feet gain a bonus to saving throws equal to your Charisma modifier."
+    },
+    7: {
+        "name": "Sacred Oath Feature",
+        "description": "Gain a new ability from your chosen Sacred Oath."
+    },
+    8: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    10: {
+        "name": "Aura of Courage",
+        "description": "You and allies within 10 feet cannot be frightened while you are conscious."
+    },
+    11: {
+        "name": "Improved Divine Smite",
+        "description": "Your melee weapon attacks automatically deal an extra 1d8 radiant damage."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    14: {
+        "name": "Cleansing Touch",
+        "description": "You can use an action to end one spell affecting yourself or another creature. Usable a number of times equal to your Charisma modifier per long rest."
+    },
+    15: {
+        "name": "Sacred Oath Feature",
+        "description": "Gain a new ability from your chosen Sacred Oath."
+    },
+16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    18: {
+        "name": "Aura Improvements",
+        "description": "Your Aura of Protection and Aura of Courage now extend to 30 feet."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Sacred Oath Feature",
+        "description": "Gain the final ability from your chosen Sacred Oath."
+    }
 }
 
 SKILLS_RANGER_SKILLNAME = {
-    1: "Favored Enemy, Natural Explorer",
-    2: "Fighting Style, Spellcasting",
-    3: "Ranger Archetype, Primeval Awareness",
-    4: "Ability Score Improvement",
-    5: "Extra Attack",
-    6: "Favored Enemy and Natural Explorer improvements",
-    7: "Ranger Archetype feature",
-    8: "Ability Score Improvement, Land’s Stride",
-    9: "-",
-    10: "Natural Explorer improvement, Hide in Plain Sight",
-    11: "Ranger Archetype feature",
-    12: "Ability Score Improvement",
-    13: "-",
-    14: "Favored Enemy improvement, Vanish",
-    15: "Ranger Archetype feature",
-    16: "Ability Score Improvement",
-    17: "-",
-    18: "Feral Senses",
-    19: "Ability Score Improvement",
-    20: "Foe Slayer"
+    1: {
+        "name": "Favored Enemy, Natural Explorer",
+        "description": "Favored Enemy grants bonuses when tracking and recalling information about a chosen enemy type. Natural Explorer enhances travel and survival abilities in a chosen terrain."
+    },
+    2: {
+        "name": "Fighting Style, Spellcasting",
+        "description": "Choose a Fighting Style that enhances combat abilities. Gain the ability to cast ranger spells."
+    },
+    3: {
+        "name": "Ranger Archetype, Primeval Awareness",
+        "description": "Choose a Ranger Archetype, gaining unique abilities. Primeval Awareness lets you sense the presence of specific creatures within 1 mile by expending a spell slot."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "Extra Attack",
+        "description": "You can attack twice when you take the Attack action."
+    },
+    6: {
+        "name": "Favored Enemy and Natural Explorer Improvements",
+        "description": "Choose an additional favored enemy and favored terrain, gaining the benefits of those features again."
+    },
+    7: {
+        "name": "Ranger Archetype Feature",
+        "description": "Gain a new ability from your chosen Ranger Archetype."
+    },
+    8: {
+        "name": "Ability Score Improvement, Land’s Stride",
+        "description": "Increase one ability score by 2, or two ability scores by 1. Land’s Stride allows you to move through nonmagical difficult terrain without extra movement and resist magical effects that slow movement."
+    },
+    9: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    10: {
+        "name": "Natural Explorer Improvement, Hide in Plain Sight",
+        "description": "Choose another favored terrain. Hide in Plain Sight allows you to camouflage yourself when stationary, making it harder to be detected."
+    },
+    11: {
+        "name": "Ranger Archetype Feature",
+        "description": "Gain a new ability from your chosen Ranger Archetype."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    14: {
+        "name": "Favored Enemy Improvement, Vanish",
+        "description": "Choose another favored enemy. Vanish allows you to Hide as a bonus action and prevents enemies from tracking you unless by magical means."
+    },
+    15: {
+        "name": "Ranger Archetype Feature",
+        "description": "Gain a new ability from your chosen Ranger Archetype."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    18: {
+        "name": "Feral Senses",
+        "description": "You gain blindsight up to 30 feet, allowing you to sense invisible creatures near you."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Foe Slayer",
+        "description": "Once per turn, you can add your Wisdom modifier to an attack roll or damage roll against a favored enemy."
+    }
 }
 
 SKILLS_ROUGE_SKILLNAME = {
-    1: "Expertise, Sneak Attack, Thieves’ Cant",
-    2: "Cunning Action",
-    3: "Roguish Archetype",
-    4: "Ability Score Improvement",
-    5: "Uncanny Dodge",
-    6: "Expertise",
-    7: "Evasion",
-    8: "Ability Score Improvement",
-    9: "Roguish Archetype feature",
-    10: "Ability Score Improvement",
-    11: "Reliable Talent",
-    12: "Ability Score Improvement",
-    13: "Roguish Archetype feature",
-    14: "Blindsense",
-    15: "Slippery Mind",
-    16: "Ability Score Improvement",
-    17: "Roguish Archetype feature",
-    18: "Elusive",
-    19: "Ability Score Improvement",
-    20: "Stroke of Luck"
+    1: {
+        "name": "Expertise, Sneak Attack, Thieves’ Cant",
+        "description": "Expertise lets you double proficiency in two skills. Sneak Attack grants bonus damage when attacking with advantage. Thieves’ Cant is a secret language known only to Rogues."
+    },
+    2: {
+        "name": "Cunning Action",
+        "description": "You can take the Dash, Disengage, or Hide action as a bonus action."
+    },
+    3: {
+        "name": "Roguish Archetype",
+        "description": "Choose a Roguish Archetype (e.g., Assassin, Thief, Arcane Trickster), granting new abilities."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "Uncanny Dodge",
+        "description": "When an attacker you can see hits you, you can use your reaction to halve the damage."
+    },
+    6: {
+        "name": "Expertise",
+        "description": "Choose two more skills to gain double proficiency."
+    },
+    7: {
+        "name": "Evasion",
+        "description": "When making a Dexterity saving throw, you take no damage on a success and only half damage on a failure."
+    },
+    8: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "Roguish Archetype Feature",
+        "description": "Gain a new feature from your Roguish Archetype."
+    },
+    10: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    11: {
+        "name": "Reliable Talent",
+        "description": "When you make an ability check with a proficient skill, you treat a d20 roll of 9 or lower as a 10."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "Roguish Archetype Feature",
+        "description": "Gain a new feature from your Roguish Archetype."
+    },
+    14: {
+        "name": "Blindsense",
+        "description": "If you can hear, you are aware of hidden or invisible creatures within 10 feet."
+    },
+    15: {
+        "name": "Slippery Mind",
+        "description": "You gain proficiency in Wisdom saving throws."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "Roguish Archetype Feature",
+        "description": "Gain a new feature from your Roguish Archetype."
+    },
+    18: {
+        "name": "Elusive",
+        "description": "No attack roll against you has advantage if you aren’t incapacitated."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Stroke of Luck",
+        "description": "Once per short rest, you can treat a failed attack roll or ability check as a natural 20."
+    }
 }
 
 SKILLS_SORCERER_SKILLNAME = {
-    1: "Spellcasting, Sorcerous Origin",
-    2: "Font of Magic",
-    3: "Metamagic",
-    4: "Ability Score Improvement",
-    5: "-",
-    6: "Sorcerous Origin feature",
-    7: "-",
-    8: "Ability Score Improvement",
-    9: "-",
-    10: "Metamagic",
-    11: "-",
-    12: "Ability Score Improvement",
-    13: "-",
-    14: "Sorcerous Origin feature",
-    15: "-",
-    16: "Ability Score Improvement",
-    17: "Metamagic",
-    18: "Sorcerous Origin feature",
-    19: "Ability Score Improvement",
-    20: "Sorcerous Restoration"
+    1: {
+        "name": "Spellcasting, Sorcerous Origin",
+        "description": "Gain the ability to cast sorcerer spells. Choose a Sorcerous Origin, which grants unique abilities and spells."
+    },
+    2: {
+        "name": "Font of Magic",
+        "description": "Gain Sorcery Points, which can be used to create spell slots or fuel Metamagic abilities."
+    },
+    3: {
+        "name": "Metamagic",
+        "description": "Choose two Metamagic options, allowing you to alter your spells in various ways, such as extending their range or making them harder to resist."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    6: {
+        "name": "Sorcerous Origin Feature",
+        "description": "Gain a new ability from your chosen Sorcerous Origin."
+    },
+    7: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    8: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    10: {
+        "name": "Metamagic",
+        "description": "Choose an additional Metamagic option."
+    },
+    11: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    14: {
+        "name": "Sorcerous Origin Feature",
+        "description": "Gain a new ability from your chosen Sorcerous Origin."
+    },
+    15: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "Metamagic",
+        "description": "Choose an additional Metamagic option."
+    },
+    18: {
+        "name": "Sorcerous Origin Feature",
+        "description": "Gain a new ability from your chosen Sorcerous Origin."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Sorcerous Restoration",
+        "description": "Regain 4 Sorcery Points when you finish a short rest."
+    }
 }
 
 SKILLS_WARLOCK_SKILLNAME = {
-    1: "Otherworldly Patron, Pact Magic",
-    2: "Eldritch Invocations",
-    3: "Pact Boon",
-    4: "Ability Score Improvement",
-    5: "-",
-    6: "Otherworldly Patron feature",
-    7: "-",
-    8: "Ability Score Improvement",
-    9: "-",
-    10: "Otherworldly Patron feature",
-    11: "Mystic Arcanum (6th level)",
-    12: "Ability Score Improvement",
-    13: "Mystic Arcanum (7th level)",
-    14: "Otherworldly Patron feature",
-    15: "Mystic Arcanum (8th level)",
-    16: "Ability Score Improvement",
-    17: "Mystic Arcanum (9th level)",
-    18: "-",
-    19: "Ability Score Improvement",
-    20: "Eldritch Master"
+    1: {
+        "name": "Otherworldly Patron, Pact Magic",
+        "description": "Choose an Otherworldly Patron, which grants unique abilities. Gain access to Pact Magic, a form of spellcasting that relies on limited but powerful spell slots."
+    },
+    2: {
+        "name": "Eldritch Invocations",
+        "description": "Gain access to Eldritch Invocations, which provide magical enhancements, including passive effects and spellcasting options."
+    },
+    3: {
+        "name": "Pact Boon",
+        "description": "Choose a Pact Boon: Pact of the Chain (familiar), Pact of the Blade (magical weapon), or Pact of the Tome (additional spells)."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    6: {
+        "name": "Otherworldly Patron Feature",
+        "description": "Gain a new ability from your chosen Otherworldly Patron."
+    },
+    7: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    8: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    10: {
+        "name": "Otherworldly Patron Feature",
+        "description": "Gain a new ability from your chosen Otherworldly Patron."
+    },
+    11: {
+        "name": "Mystic Arcanum (6th level)",
+        "description": "Gain a 6th-level spell that can be cast once per long rest without expending a spell slot."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "Mystic Arcanum (7th level)",
+        "description": "Gain a 7th-level spell that can be cast once per long rest without expending a spell slot."
+    },
+    14: {
+        "name": "Otherworldly Patron Feature",
+        "description": "Gain a new ability from your chosen Otherworldly Patron."
+    },
+    15: {
+        "name": "Mystic Arcanum (8th level)",
+        "description": "Gain an 8th-level spell that can be cast once per long rest without expending a spell slot."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "Mystic Arcanum (9th level)",
+        "description": "Gain a 9th-level spell that can be cast once per long rest without expending a spell slot."
+    },
+    18: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Eldritch Master",
+        "description": "You can spend 1 minute entreating your patron to regain all expended Pact Magic spell slots."
+    }
 }
 
 SKILLS_WIZARD_SKILLNAME = {
-    1: "Spellcasting, Arcane Recovery",
-    2: "Arcane Tradition",
-    3: "-",
-    4: "Ability Score Improvement",
-    5: "-",
-    6: "Arcane Tradition feature",
-    7: "-",
-    8: "Ability Score Improvement",
-    9: "-",
-    10: "Arcane Tradition feature",
-    11: "-",
-    12: "Ability Score Improvement",
-    13: "-",
-    14: "Arcane Tradition feature",
-    15: "-",
-    16: "Ability Score Improvement",
-    17: "-",
-    18: "Spell Mastery",
-    19: "Ability Score Improvement",
-    20: "Signature Spell"
+    1: {
+        "name": "Spellcasting, Arcane Recovery",
+        "description": "Gain the ability to cast wizard spells. Arcane Recovery allows you to regain expended spell slots (of combined levels up to half your wizard level) once per day after a short rest."
+    },
+    2: {
+        "name": "Arcane Tradition",
+        "description": "Choose an Arcane Tradition, which grants unique abilities and specializes your magical study (e.g., Evocation, Necromancy, Illusion)."
+    },
+    3: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    4: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    5: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    6: {
+        "name": "Arcane Tradition Feature",
+        "description": "Gain a new ability from your chosen Arcane Tradition."
+    },
+    7: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    8: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    9: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    10: {
+        "name": "Arcane Tradition Feature",
+        "description": "Gain a new ability from your chosen Arcane Tradition."
+    },
+    11: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    12: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    13: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    14: {
+        "name": "Arcane Tradition Feature",
+        "description": "Gain a new ability from your chosen Arcane Tradition."
+    },
+    15: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    16: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    17: {
+        "name": "No new features",
+        "description": "No additional features gained at this level."
+    },
+    18: {
+        "name": "Spell Mastery",
+        "description": "Choose a 1st-level and a 2nd-level wizard spell. You can cast these spells at their lowest level without expending a spell slot."
+    },
+    19: {
+        "name": "Ability Score Improvement",
+        "description": "Increase one ability score by 2, or two ability scores by 1."
+    },
+    20: {
+        "name": "Signature Spell",
+        "description": "Choose two 3rd-level wizard spells. You can cast these spells at their lowest level without expending a spell slot, and you can cast them at higher levels by using spell slots."
+    }
 }
 
 SKILLS_CLASS_TO_BONUSES = {

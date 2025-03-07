@@ -4,6 +4,7 @@ import glob
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+from typing import Optional
 
 import character_overview
 import enemy_creation
@@ -54,7 +55,7 @@ class BattleScreenManager:
         self.entry_map_id = None
         self.entry_map_money = None
 
-        self.new_enemy = None
+        self.new_enemy: Optional[Enemy] = None
         self.list_of_enemies = []
 
         self.map_size = 800
@@ -468,7 +469,7 @@ class BattleScreenManager:
         images_folder_path = os.path.join(os.getcwd(), 'maps')
         png_files = glob.glob(os.path.join(images_folder_path, '*.png'))
         jpg_files = glob.glob(os.path.join(images_folder_path, '*.jpg'))
-        file_names = [os.path.basename(file) for file in png_files + jpg_files]
+        file_names = [os.path.basename(file) for file in png_files] + [os.path.basename(file) for file in jpg_files]
 
         return file_names
 
@@ -544,6 +545,9 @@ class BattleScreenManager:
     def add_current_enemy_to_list(self):
         if self.new_enemy is None:
             return
+
+        self.new_enemy.Temp_CharaName = self.enemy_entry_fields[1].get()
+        self.new_enemy.Temp_HP_Max = int(self.enemy_entry_fields[2].get())
 
         self.list_of_enemies.append(self.new_enemy)
         self.refresh_enemy_list()
