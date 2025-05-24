@@ -25,7 +25,10 @@ ACCOUNTS = {
 }
 
 IDS = {
-    "Dominik": 4
+    "Dominik": 4,
+    "Nadir": 1,
+    "Tobi": 2,
+    "Nik": 3
 }
 
 
