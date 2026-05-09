@@ -283,7 +283,7 @@ class BattleScreenManager:
         attacker_text = get_text(attacker_and_damage[0], attacker_and_damage[1])
         defender_text = get_text(defender_and_damage[0], defender_and_damage[1])
 
-        messagebox.showinfo("DAMAGE", attacker_text+defender_text)
+        # messagebox.showinfo("DAMAGE", attacker_text+defender_text)
         self.combat_window.destroy()
         self.refresh_sequence_list()
         party_menu.create_party_elements()
