@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 from tktooltip import ToolTip
 from OnDemandWindows import window_manager
 from GUI_CharacterInfo import charaWindow
+import gc
 
 class CharacterOverview:
     def __init__(self):
@@ -82,7 +83,11 @@ class CharacterOverview:
             if not self.main_overview_window.winfo_exists():
                 return
 
+        indexer = 0
+
         for frame in self.party_member_frames:
+            indexer += 1
+            print(indexer)
             frame.destroy()
 
         self.party_member_frames.clear()
@@ -187,6 +192,8 @@ class CharacterOverview:
                                                                                               self.create_party_elements))
             edit_button.grid(row=0, column=4, padx=1, pady=0, sticky="nsew")
             ToolTip(edit_button, msg="Character Creation Menu", delay=.2)
+
+            self.party_member_frames.append(chara_frame)
 
         number_of_party_members = len(cm_shared.get_all_ids_from_available_characters())
 
