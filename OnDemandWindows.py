@@ -714,7 +714,7 @@ class OnDemandWindows:
         def render():
             override = chara.get_mp_override()
             values = override if override is not None else chara.get_max_magic_points()
-            status.configure(text='Current override' if override is not None else 'No override — edit maximum MP below')
+            status.configure(text='Current override' if override is not None else 'No override! edit maximum MP below')
             for entry, value in zip(fields, values):
                 entry.configure(state='normal')
                 entry.delete(0, tk.END)
