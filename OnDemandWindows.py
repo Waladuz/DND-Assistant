@@ -701,7 +701,7 @@ class OnDemandWindows:
         def render():
             override = chara.get_mp_override()
             values = override if override is not None else chara.get_max_magic_points()
-            status.configure(text='Current override' if override is not None else 'No override — edit maximum MP below')
+            status.configure(text='Current override' if override is not None else 'No override! edit maximum MP below')
             for entry, value in zip(fields, values):
                 entry.configure(state='normal')
                 entry.delete(0, tk.END)
@@ -919,7 +919,7 @@ class OnDemandWindows:
 
             print(skill)
 
-            label = ttk.Label(base_frame, text=f"{skill["name"]}")
+            label = ttk.Label(base_frame, text=skill["name"])
             label.grid(row=i, column=1, padx=5, pady=5, sticky="w")
 
             ToolTip(label, msg=lambda skill=skill: skill["description"], delay=.2)
