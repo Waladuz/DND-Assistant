@@ -1,0 +1,4 @@
+.character-navigation { max-width: 1000px; margin: 16px auto; padding: 0 16px; text-align: left; }
+.character-navigation a { display: inline-block; padding: 10px 16px; border-radius: 5px; background: #007bff; color: white; text-decoration: none; font: 16px Arial, sans-serif; }
+.character-navigation a:hover { background: #0056b3; }
+.character-navigation a:focus-visible { outline: 3px solid #222; outline-offset: 3px; }

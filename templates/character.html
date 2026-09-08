@@ -124,8 +124,10 @@
             padding: 5px;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='navigation.css') }}">
 </head>
 <body>
+{% include "_character_navigation.html" %}
     <div class="container">
         <h1>{{ character.name }}</h1>
         <table aria-label="Character overview">

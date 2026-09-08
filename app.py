@@ -604,6 +604,8 @@ class WebsiteControl:
                       "exp": chara.Base_Exp,
                       "money": chara.get_current_total_money(),
                       "attributes": attribute_dict,
+                      "attribute_modifiers": {name: shared_data.get_attribute_modifier(value)
+                                              for name, value in attribute_dict.items()},
                       "skills": skill_dict}
 
         return chara_dict

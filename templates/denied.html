@@ -15,8 +15,13 @@
             box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
 </head>
-<body>
+<body class="site-page">
+{% include "_character_navigation.html" %}
+<div class="site-content">
     <img src="{{ url_for('static', filename='denied.png') }}" alt="Denied Image">
+</div>
 </body>
 </html>

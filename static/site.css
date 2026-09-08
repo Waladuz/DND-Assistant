@@ -1,0 +1,18 @@
+/* Shared presentation for supporting pages; stats and character keep their layouts. */
+body.site-page { display: block; height: auto; min-height: 100vh; margin: 0; padding: 0; background: #f4f4f9; color: #333; font: 16px/1.5 Arial, sans-serif; text-align: left; }
+.site-page * { box-sizing: border-box; }
+.site-content { max-width: 1000px; margin: 16px auto 32px; padding: 24px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgb(0 0 0 / 10%); overflow-wrap: anywhere; }
+.site-content .container, .site-content .container2, .site-content main { width: 100%; max-width: none; margin: 0; padding: 0; background: transparent; border-radius: 0; box-shadow: none; }
+.site-content h1, .site-content h2 { color: #333; text-align: left; }
+.site-content h1 { font-size: 1.75rem; }
+.site-content h2 { font-size: 1.3rem; margin-top: 24px; }
+.site-content table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+.site-content th, .site-content td { padding: 10px 12px; border: 1px solid #ddd; text-align: left; }
+.site-content th { background: #f2f2f2; color: #333; }
+.site-content button, .site-content .btn, .site-content .create { font: inherit; padding: 10px 16px; border: 0; border-radius: 5px; background: #007bff; color: white; cursor: pointer; }
+.site-content button:hover, .site-content .btn:hover { background: #0056b3; }
+.site-content input:not([type=hidden]):not([type=checkbox]), .site-content select, .site-content textarea { max-width: 100%; padding: 8px; border: 1px solid #888; border-radius: 4px; font: inherit; }
+.site-content .table-container { max-width: 100%; overflow-x: auto; }
+.site-content form { max-width: 100%; }
+.site-content img { max-width: 100%; height: auto; }
+@media(max-width: 600px) { .site-content { margin: 12px; padding: 16px; } .site-content th, .site-content td { padding: 8px; } }

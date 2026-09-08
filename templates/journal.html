@@ -22,10 +22,13 @@
         .attribution { display: block; margin-bottom: 12px; }
         @media(max-width: 600px) { main { margin: 0; padding: 12px; } }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
 </head>
-<body>
+<body class="site-page">
+{% include "_character_navigation.html" %}
+<div class="site-content">
 <main>
-    <a href="{{ url_for('character') }}">&larr; Character</a>
     <h1>Journal</h1>
     <p>Shared campaign notes. Most recently updated topics appear first. Times are UTC.</p>
     {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
@@ -69,5 +72,6 @@
         {% else %}<p>No journal topics yet. Create a topic to start your journal.</p>{% endfor %}
     </section>
 </main>
+</div>
 </body>
 </html>
