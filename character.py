@@ -826,3 +826,22 @@ class EnemyAttack:
         self.name = attack_data[2]
         self.description = attack_data[3]
 
+
+
+class JournalItem:
+    """A persisted journal entry; CharaID may be None."""
+    def __init__(self, ID, Text, CreationDate, CharaID, journalTopicID):
+        self.ID = ID
+        self.Text = Text
+        self.CreationDate = CreationDate
+        self.CharaID = CharaID
+        self.journalTopicID = journalTopicID
+
+
+class JournalTopic:
+    def __init__(self, ID, Name, CreationDate, ChangeDate):
+        self.ID = ID
+        self.Name = Name
+        self.CreationDate = CreationDate
+        self.ChangeDate = ChangeDate
+        self.Items = []

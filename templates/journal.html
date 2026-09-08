@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f4f4f9; color: #333; margin: 0; }
+        main { max-width: 900px; margin: 32px auto; padding: 24px; background: white; border-radius: 8px; }
+        h1 { margin-top: 0; } a { color: #0056b3; }
+        button, .create { background: #007bff; color: white; padding: 10px 16px; border: 0; border-radius: 5px; cursor: pointer; font: inherit; }
+        summary { cursor: pointer; padding: 10px 0; font-weight: bold; overflow-wrap: anywhere; }
+        .create { display: list-item; width: fit-content; margin: 16px 0 16px 20px; }
+        .topics { margin: 24px 0; }
+        .topic { padding: 12px 0; border-bottom: 1px solid #ddd; }
+        input[type=text], textarea { width: 100%; padding: 10px; margin: 8px 0 12px; border: 1px solid #888; border-radius: 4px; font: inherit; }
+        textarea { min-height: 130px; resize: vertical; }
+        article { padding: 12px; margin: 12px 0; background: #f4f4f9; border-radius: 4px; }
+        .entry-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+        .meta { font-size: .85rem; color: #555; } .error { color: #a40000; background: #fff0f0; padding: 12px; }
+        .attribution { display: block; margin-bottom: 12px; }
+        @media(max-width: 600px) { main { margin: 0; padding: 12px; } }
+    </style>
+</head>
+<body>
+<main>
+    <a href="{{ url_for('character') }}">&larr; Character</a>
+    <h1>Journal</h1>
+    <p>Shared campaign notes. Most recently updated topics appear first. Times are UTC.</p>
+    {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+    <details {% if error and request.form.get('action') == 'topic' %}open{% endif %}>
+        <summary class="create">Create new Topic</summary>
+        <form method="POST" action="{{ url_for('journal') }}">
+            <input type="hidden" name="token" value="{{ token }}">
+            <input type="hidden" name="action" value="topic">
+            <label for="topic-name">Topic name</label>
+            <input id="topic-name" type="text" name="name" maxlength="200" required value="{{ request.form.get('name', '') if error else '' }}">
+            <button type="submit">Create Topic</button>
+        </form>
+    </details>
+    <section class="topics" aria-label="Journal topics">
+        {% for topic in topics %}
+            <div class="topic">
+                    <details {% if topic.ID == open_topic %}open{% endif %}>
+                        <summary>{{ topic.Name }} ({{ topic.Items|length }})</summary>
+                        <p class="meta">Created {{ topic.CreationDate[:19]|replace('T', ' ') }} UTC</p>
+                        {% for entry in topic.Items %}
+                            <article>
+                                <div class="meta">{{ entry.CreationDate[:19]|replace('T', ' ') }} UTC &middot;
+                                {% if entry.CharaID in characters %}{{ characters[entry.CharaID].Base_Name }}{% elif entry.CharaID is not none %}Former character{% else %}Unattributed{% endif %}</div>
+                                <div class="entry-text">{{ entry.Text }}</div>
+                            </article>
+                        {% else %}<p>No entries yet.</p>{% endfor %}
+                        <details {% if error and topic.ID == open_topic %}open{% endif %}>
+                            <summary class="create">Create new Entry</summary>
+                            <form method="POST" action="{{ url_for('journal') }}">
+                                <input type="hidden" name="token" value="{{ token }}">
+                                <input type="hidden" name="action" value="entry">
+                                <input type="hidden" name="topic_id" value="{{ topic.ID }}">
+                                <label for="entry-{{ topic.ID }}">Journal entry</label>
+                                <textarea id="entry-{{ topic.ID }}" name="text" maxlength="20000" required>{{ request.form.get('text', '') if error and topic.ID == open_topic else '' }}</textarea>
+                                <label class="attribution"><input type="checkbox" name="attribute" value="yes" {% if not error or request.form.get('attribute') == 'yes' %}checked{% endif %}> Attribute to my character</label>
+                                <button type="submit">Save Entry</button>
+                            </form>
+                        </details>
+                    </details>
+            </div>
+        {% else %}<p>No journal topics yet. Create a topic to start your journal.</p>{% endfor %}
+    </section>
+</main>
+</body>
+</html>
