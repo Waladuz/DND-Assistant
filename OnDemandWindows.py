@@ -605,7 +605,7 @@ class OnDemandWindows:
         current_entries = []
         maximum_labels = []
         for i in range(9):
-            entry = ttk.Entry(base_frame, width=4, state='readonly')
+            entry = ttk.Entry(base_frame, width=4)
             entry.grid(row=1, column=2 * i, padx=5, pady=5, sticky="w")
             current_entries.append(entry)
             label = ttk.Label(base_frame)
@@ -618,8 +618,21 @@ class OnDemandWindows:
                 entry.configure(state='normal')
                 entry.delete(0, tk.END)
                 entry.insert(0, str(chara.Magic_Points[i]))
-                entry.configure(state='readonly')
                 maximum_labels[i - 1].configure(text=str(chara.Max_Magic_Points[i]))
+
+        def save_current_mp(event, level):
+            try:
+                value = int(current_entries[level - 1].get())
+            except ValueError:
+                refresh_mp()
+                return
+            chara.refresh_magic_point_limits()
+            chara.change_magic_points(level, value - chara.Magic_Points[level])
+            refresh_mp()
+
+        for level, entry in enumerate(current_entries, 1):
+            entry.bind('<Return>', lambda event, level=level: save_current_mp(event, level))
+            entry.bind('<FocusOut>', lambda event, level=level: save_current_mp(event, level))
 
         refresh_mp()
         ttk.Button(base_frame, text="Manage MP Overrides",
