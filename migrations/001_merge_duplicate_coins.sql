@@ -1,6 +1,6 @@
 -- Run once against an existing assets.db with the application closed.
 -- Safe to rerun: quantities are merged before duplicate item records are removed.
--- Original coin records (188, 189, 190), including all values, remain unchanged.
+-- Keep original coin IDs; correct their values and make them weightless.
 BEGIN IMMEDIATE;
 
 -- Preserve inventory quantities, including when a player has no original stack.
@@ -27,6 +27,11 @@ WHERE item_id IN (194, 195, 196);
 UPDATE map_loot
 SET item_id = CASE item_id WHEN 194 THEN 188 WHEN 195 THEN 189 WHEN 196 THEN 190 END
 WHERE item_id IN (194, 195, 196);
+
+UPDATE items
+SET weight = 0,
+    baseValue = CASE id WHEN 188 THEN 1 WHEN 189 THEN 10 WHEN 190 THEN 100 END
+WHERE id IN (188, 189, 190);
 
 DELETE FROM items WHERE id IN (194, 195, 196);
 COMMIT;
