@@ -130,12 +130,18 @@
         <h1>{{ character.name }}</h1>
         <table aria-label="Character overview">
             <tbody>
-                <tr><th scope="row">HP</th><td>{{ character.hp }}</td></tr>
-                <tr><th scope="row">Race</th><td>{{ character.race }}</td></tr>
-                <tr><th scope="row">Class</th><td>{{ character.class }}</td></tr>
-                <tr><th scope="row">Level</th><td>{{ character.level }}</td></tr>
-                <tr><th scope="row">Experience</th><td>{{ character.exp }}</td></tr>
-                <tr><th scope="row">Money (copper)</th><td>{{ character.money }}</td></tr>
+                <tr>
+                    <th id="overview-hp">HP</th><td headers="overview-hp">{{ character.hp }}</td>
+                    <th id="overview-race">Race</th><td headers="overview-race">{{ character.race }}</td>
+                </tr>
+                <tr>
+                    <th id="overview-class">Class</th><td headers="overview-class">{{ character.class }}</td>
+                    <th id="overview-level">Level</th><td headers="overview-level">{{ character.level }}</td>
+                </tr>
+                <tr>
+                    <th id="overview-exp">Experience</th><td headers="overview-exp">{{ character.exp }}</td>
+                    <th id="overview-money">Money</th><td headers="overview-money">{{ character.money }}</td>
+                </tr>
             </tbody>
         </table>
 
