@@ -2,7 +2,7 @@ import tkinter as tk
 from collections import Counter
 import os
 import glob
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import character
 import shared_data
 from item import item_database, Item, Weapon, Armor
@@ -12,6 +12,7 @@ from typing import List
 from PIL import Image, ImageTk
 from tktooltip import ToolTip
 import random
+import sqlite3
 
 
 class OnDemandWindows:
@@ -601,25 +602,29 @@ class OnDemandWindows:
             label = ttk.Label(base_frame, text=f"Lvl. {i + 1}", font=("Helvetica", 12, "bold"))
             label.grid(row=0, column=2 * i, columnspan=2, padx=5, pady=5, sticky="nsew")
 
-        # Fix this for non-mp classes
-        if chara.Base_Class in shared_data.MP_BY_CLASS:
-            mp_by_level = list(chara.Max_Magic_Points.values())
-            mp_true = list(chara.Magic_Points.values())
-
-            print(mp_true)
-        else:
-            mp_by_level = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            mp_true = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+        current_entries = []
+        maximum_labels = []
         for i in range(9):
-            # Create an entry field for each skill
-            entry = ttk.Entry(base_frame, width=2)
-            entry.delete(0, tk.END)
-            entry.insert(0, f"{mp_true[i]}")
+            entry = ttk.Entry(base_frame, width=4, state='readonly')
             entry.grid(row=1, column=2 * i, padx=5, pady=5, sticky="w")
-
-            label = ttk.Label(base_frame, text=f"{mp_by_level[i]}")
+            current_entries.append(entry)
+            label = ttk.Label(base_frame)
             label.grid(row=1, column=2 * i + 1, padx=5, pady=5, sticky="nsew")
+            maximum_labels.append(label)
+
+        def refresh_mp():
+            chara.refresh_magic_point_limits()
+            for i, entry in enumerate(current_entries, 1):
+                entry.configure(state='normal')
+                entry.delete(0, tk.END)
+                entry.insert(0, str(chara.Magic_Points[i]))
+                entry.configure(state='readonly')
+                maximum_labels[i - 1].configure(text=str(chara.Max_Magic_Points[i]))
+
+        refresh_mp()
+        ttk.Button(base_frame, text="Manage MP Overrides",
+                   command=lambda: self.open_mp_override_window(chara, self.magic_window, refresh_mp)
+                   ).grid(row=2, column=0, columnspan=18, pady=10)
 
         spells_frame = ttk.LabelFrame(self.magic_window, text="Spells", width=200, padding=(10, 10))
         spells_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
@@ -675,6 +680,54 @@ class OnDemandWindows:
         self.load_magic_spells_for_chara(chara)
 
         self.magic_window.mainloop()
+
+    def open_mp_override_window(self, chara, parent, refresh_parent):
+        window = tk.Toplevel(parent)
+        window.title(f"MP Overrides ({chara.Base_Name})")
+        window.transient(parent)
+        self.position_window(parent, window)
+        window.grab_set()
+        frame = ttk.Frame(window, padding=15)
+        frame.pack(fill='both', expand=True)
+        status = ttk.Label(frame)
+        status.grid(row=0, column=0, columnspan=2, pady=8)
+        fields = []
+        for level in range(1, 10):
+            ttk.Label(frame, text=f"Level {level}").grid(row=level, column=0, padx=8, pady=4)
+            entry = ttk.Entry(frame, width=10)
+            entry.grid(row=level, column=1, padx=8, pady=4)
+            fields.append(entry)
+
+        def render():
+            override = chara.get_mp_override()
+            values = override if override is not None else chara.get_max_magic_points()
+            status.configure(text='Current override' if override is not None else 'No override — edit maximum MP below')
+            for entry, value in zip(fields, values):
+                entry.configure(state='normal')
+                entry.delete(0, tk.END)
+                entry.insert(0, str(value))
+                if override is not None:
+                    entry.configure(state='readonly')
+            save_button.grid_remove()
+            delete_button.grid_remove()
+            (delete_button if override is not None else save_button).grid(row=10, column=0, columnspan=2, pady=10)
+
+        def apply(delete=False):
+            try:
+                if delete:
+                    chara.delete_mp_override()
+                else:
+                    chara.create_mp_override([int(entry.get()) for entry in fields])
+                refresh_parent()
+                render()
+            except (ValueError, OverflowError):
+                messagebox.showerror('Invalid MP', 'Enter nine non-negative whole numbers within SQLite integer range.', parent=window)
+            except sqlite3.Error:
+                messagebox.showerror('Save failed', 'Could not update MP overrides. Please try again.', parent=window)
+
+        save_button = ttk.Button(frame, text='Save Override', command=apply)
+        delete_button = ttk.Button(frame, text='Delete Override', command=lambda: apply(True))
+        render()
 
     def update_magic_treeview(self, event, search_var):
         for item in self.submenu_spell_list.get_children():

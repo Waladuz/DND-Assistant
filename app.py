@@ -264,6 +264,7 @@ class WebsiteControl:
             chara_data = self.convert_chara_to_dict(character)
 
             magic_points = []
+            character.refresh_magic_point_limits()
             max_mp = character.Max_Magic_Points
             current_mp = character.Magic_Points
 
@@ -314,6 +315,7 @@ class WebsiteControl:
             character: Character = DataManagers.cm_shared.get_dictionary()[character_id]
             character.change_magic_points(level=level, amount=amount)
 
+            character.refresh_magic_point_limits()
             max_mp = character.Max_Magic_Points
             current_mp = character.Magic_Points
 

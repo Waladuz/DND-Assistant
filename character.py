@@ -1,4 +1,6 @@
 import sqlite3
+from contextlib import closing
+from pathlib import Path
 
 import item
 import shared_data
@@ -150,28 +152,69 @@ class Character:
 
         self.Shopping_List.remove(new_item)
 
+    def _mp_connection(self):
+        connection = sqlite3.connect('assets.db')
+        try:
+            migration = Path(__file__).parent / 'migrations' / '003_mp_overrides.sql'
+            connection.executescript(migration.read_text())
+        except Exception:
+            connection.close()
+            raise
+        return connection
+
+    def get_mp_override(self):
+        """Return nine stored maximums, or None when class defaults apply."""
+        with closing(self._mp_connection()) as connection:
+            row = connection.execute(
+                'SELECT level_1, level_2, level_3, level_4, level_5, level_6, '
+                'level_7, level_8, level_9 FROM mp_overrides WHERE character_id=?',
+                (self.ID,)).fetchone()
+        return list(row) if row is not None else None
+
+    def get_max_magic_points(self) -> List[int]:
+        override = self.get_mp_override()
+        if override is not None:
+            return override
+        values = shared_data.MP_BY_CLASS.get(self.Base_Class, {}).get(int(self.Base_Level), [])
+        return (list(values) + [0] * 9)[:9]
+
+    def refresh_magic_point_limits(self):
+        """Refresh maximums without refilling spent MP; clamp when limits shrink."""
+        values = self.get_max_magic_points()
+        self.Max_Magic_Points = dict(enumerate(values, 1))
+        self.Magic_Points = {level: max(0, min(self.Magic_Points.get(level, 0), maximum))
+                             for level, maximum in self.Max_Magic_Points.items()}
+
+    def create_mp_override(self, values: List[int]):
+        if not isinstance(values, list) or len(values) != 9 or any(
+                type(value) is not int or value < 0 for value in values):
+            raise ValueError('Enter exactly nine non-negative integers, for levels 1 through 9.')
+        with closing(self._mp_connection()) as connection:
+            with connection:
+                connection.execute(
+                    'INSERT INTO mp_overrides VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '
+                    'ON CONFLICT(character_id) DO UPDATE SET '
+                    + ', '.join(f'level_{i}=excluded.level_{i}' for i in range(1, 10)),
+                    [self.ID] + values)
+        self.refresh_magic_point_limits()
+
+    def delete_mp_override(self):
+        with closing(self._mp_connection()) as connection:
+            with connection:
+                connection.execute('DELETE FROM mp_overrides WHERE character_id=?', (self.ID,))
+        self.refresh_magic_point_limits()
+
     def set_magic_points(self):
-        if self.Base_Class not in shared_data.MP_BY_CLASS.keys():
-            return
-
-        mp_list: List[int] = shared_data.MP_BY_CLASS[self.Base_Class][int(self.Base_Level)]
-        self.Magic_Points.clear()
-        self.Max_Magic_Points.clear()
-
-        for i in range(len(mp_list)):
-            self.Max_Magic_Points[i + 1] = mp_list[i]
-            self.Magic_Points[i + 1] = mp_list[i]
+        """Refill MP to the effective maximums (override or class/level defaults)."""
+        self.Max_Magic_Points = dict(enumerate(self.get_max_magic_points(), 1))
+        self.Magic_Points = self.Max_Magic_Points.copy()
 
     def change_magic_points(self, level: int, amount: int):
-        if len(self.Magic_Points) == 0 or level not in list(range(1, 21)):
+        if level not in range(1, 10):
             return
-
-        current_value = self.Magic_Points[level]
-        current_max = self.Max_Magic_Points[level]
-
-        current_value += amount
-        current_value = max(0, min(current_value, current_max))
-        self.Magic_Points[level] = current_value
+        self.refresh_magic_point_limits()
+        self.Magic_Points[level] = max(0, min(
+            self.Magic_Points[level] + amount, self.Max_Magic_Points[level]))
 
     def get_current_ac(self):
         text = ""
