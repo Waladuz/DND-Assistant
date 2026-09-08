@@ -605,7 +605,7 @@ class OnDemandWindows:
         current_entries = []
         maximum_labels = []
         for i in range(9):
-            entry = ttk.Entry(base_frame, width=4, state='readonly')
+            entry = ttk.Entry(base_frame, width=4, state='normal')
             entry.grid(row=1, column=2 * i, padx=5, pady=5, sticky="w")
             current_entries.append(entry)
             label = ttk.Label(base_frame)
@@ -618,7 +618,7 @@ class OnDemandWindows:
                 entry.configure(state='normal')
                 entry.delete(0, tk.END)
                 entry.insert(0, str(chara.Magic_Points[i]))
-                entry.configure(state='readonly')
+                #entry.configure(state='readonly')
                 maximum_labels[i - 1].configure(text=str(chara.Max_Magic_Points[i]))
 
         refresh_mp()
