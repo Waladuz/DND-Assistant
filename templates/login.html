@@ -58,8 +58,12 @@
             background-color: #0056b3;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
 </head>
-<body>
+<body class="site-page">
+{% include "_character_navigation.html" %}
+<div class="site-content">
     <form method="POST">
         <label for="username">Username:</label>
         <input type="text" name="username" id="username" required>
@@ -69,5 +73,6 @@
 
         <button type="submit">Login</button>
     </form>
+</div>
 </body>
 </html>

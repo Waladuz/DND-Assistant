@@ -66,8 +66,12 @@
             background-color: #f9f9f9;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
 </head>
-<body>
+<body class="site-page">
+{% include "_character_navigation.html" %}
+<div class="site-content">
 
     <!-- Buttons Section -->
     <div class="container">
@@ -93,5 +97,6 @@
         }
     </script>
 
+</div>
 </body>
 </html>

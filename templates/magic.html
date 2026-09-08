@@ -129,8 +129,13 @@
 
 
     </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
 </head>
-<body>
+<body class="site-page">
+{% include "_character_navigation.html" %}
+<div class="site-content">
     <h1>{{ character.name }}</h1>
         <p><strong>HP:</strong> {{ character.hp }}</p>
         <p><strong>Race:</strong> {{ character.race }}</p>
@@ -230,5 +235,6 @@
     </script>
 
 
+</div>
 </body>
 </html>

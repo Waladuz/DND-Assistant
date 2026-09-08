@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ character.name }} - Stats</title>
     <style>
 
         body {
@@ -30,9 +30,16 @@
         }
 
 
+        .modifier { font-weight: bold; white-space: nowrap; }
+        .modifier-positive { color: #166534; }
+        .modifier-negative { color: #b91c1c; }
+        .modifier-zero { color: #555; }
     </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='navigation.css') }}">
 </head>
 <body>
+{% include "_character_navigation.html" %}
 <div class="container">
         <h1>{{ character.name }}</h1>
         <p><strong>HP:</strong> {{ character.hp }}</p>
@@ -54,7 +61,7 @@
                     {% for ability, value in character.attributes.items() %}
                     <tr>
                         <td>{{ ability }}</td>
-                        <td>{{ value }}</td>
+                        <td>{{ value }} {% set modifier = character.attribute_modifiers[ability] %}<span class="modifier modifier-{{ 'positive' if modifier > 0 else 'negative' if modifier < 0 else 'zero' }}">({{ '%+d'|format(modifier) }})</span></td>
                     </tr>
                     {% endfor %}
                 </tbody>

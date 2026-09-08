@@ -84,8 +84,12 @@
         }
 
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
 </head>
-<body>
+<body class="site-page">
+{% include "_character_navigation.html" %}
+<div class="site-content">
 
     <div class="container">
         <h2>Shopping List</h2>
@@ -234,5 +238,6 @@
         }
     </script>
 
+</div>
 </body>
 </html>
