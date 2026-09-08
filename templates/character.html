@@ -128,11 +128,16 @@
 <body>
     <div class="container">
         <h1>{{ character.name }}</h1>
-        <p><strong>HP:</strong> {{ character.hp }}</p>
-        <p><strong>Race:</strong> {{ character.race }}</p>
-        <p><strong>Class:</strong> {{ character.class }}</p>
-        <p><strong>Level:</strong> {{ character.level }}</p>
-        <p><strong>Experience:</strong> {{ character.exp }}</p>
+        <table aria-label="Character overview">
+            <tbody>
+                <tr><th scope="row">HP</th><td>{{ character.hp }}</td></tr>
+                <tr><th scope="row">Race</th><td>{{ character.race }}</td></tr>
+                <tr><th scope="row">Class</th><td>{{ character.class }}</td></tr>
+                <tr><th scope="row">Level</th><td>{{ character.level }}</td></tr>
+                <tr><th scope="row">Experience</th><td>{{ character.exp }}</td></tr>
+                <tr><th scope="row">Money (copper)</th><td>{{ character.money }}</td></tr>
+            </tbody>
+        </table>
 
         <div class="container2">
         <form action="/stats" method="POST">

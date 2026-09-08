@@ -563,6 +563,7 @@ class WebsiteControl:
                       "hp": chara.get_hp_as_text(),
                       "level": chara.Base_Level,
                       "exp": chara.Base_Exp,
+                      "money": chara.get_current_total_money(),
                       "attributes": attribute_dict,
                       "skills": skill_dict}
 
