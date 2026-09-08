@@ -1,4 +1,8 @@
-from character import Character, Enemy
+from character import Character, Enemy, JournalTopic, JournalItem
+from datetime import datetime, timezone
+from contextlib import closing
+from pathlib import Path
+from threading import RLock
 import sqlite3
 import copy
 
@@ -264,6 +268,78 @@ class Map:
         connection.commit()
 
 
+class JournalManager:
+    """SQLite-backed shared campaign journal, newest changed topics first."""
+    def __init__(self, db_path='assets.db'):
+        self.db_path = db_path
+        self.Topics = []
+        self._lock = RLock()
+        migration = Path(__file__).parent / 'migrations' / '002_journal.sql'
+        with closing(sqlite3.connect(self.db_path)) as connection:
+            connection.executescript(migration.read_text(encoding='utf-8'))
+        self.get_all_journals_by_topic()
+
+    @staticmethod
+    def _now():
+        return datetime.now(timezone.utc).isoformat(timespec='microseconds')
+
+    def get_all_journals_by_topic(self):
+        """Return topics by ChangeDate descending, with entries oldest first."""
+        with self._lock, closing(sqlite3.connect(self.db_path)) as connection:
+            with connection:
+                connection.execute('BEGIN')
+                topics = [JournalTopic(*row) for row in connection.execute(
+                    'SELECT ID, Name, CreationDate, ChangeDate FROM journalTopics '
+                    'ORDER BY ChangeDate DESC, ID DESC')]
+                by_id = {topic.ID: topic for topic in topics}
+                for row in connection.execute(
+                    'SELECT ID, Text, CreationDate, CharaID, journalTopicID FROM journalItems '
+                    'ORDER BY CreationDate, ID'):
+                    by_id[row[4]].Items.append(JournalItem(*row))
+            self.Topics = topics
+            return topics
+
+    def create_journal_topic(self, name: str):
+        if not isinstance(name, str) or not name.strip() or len(name.strip()) > 200:
+            raise ValueError('Enter a topic name between 1 and 200 characters.')
+        now = self._now()
+        with self._lock, closing(sqlite3.connect(self.db_path)) as connection:
+            with connection:
+                cursor = connection.execute(
+                    'INSERT INTO journalTopics (Name, CreationDate, ChangeDate) VALUES (?, ?, ?)',
+                    (name.strip(), now, now))
+                topic_id = cursor.lastrowid
+            self.get_all_journals_by_topic()
+        return topic_id
+
+    def add_journal_item(self, text: str, journalTopicID: str, chara: Character = None):
+        if not isinstance(text, str) or not text.strip() or len(text) > 20000:
+            raise ValueError('Enter an entry between 1 and 20000 characters.')
+        try:
+            topic_id = int(journalTopicID)
+        except (ValueError, TypeError):
+            raise ValueError('Choose a valid journal topic.') from None
+        chara_id = chara.ID if chara is not None else None
+        with self._lock, closing(sqlite3.connect(self.db_path)) as connection:
+            with connection:
+                connection.execute('BEGIN IMMEDIATE')
+                if not connection.execute('SELECT 1 FROM journalTopics WHERE ID=?', (topic_id,)).fetchone():
+                    raise ValueError('Journal topic does not exist.')
+                if chara_id is not None and not connection.execute(
+                        'SELECT 1 FROM character WHERE id=?', (chara_id,)).fetchone():
+                    raise ValueError('Character does not exist.')
+                now = self._now()
+                cursor = connection.execute(
+                    'INSERT INTO journalItems (Text, CreationDate, CharaID, journalTopicID) '
+                    'VALUES (?, ?, ?, ?)', (text.strip(), now, chara_id, topic_id))
+                item_id = cursor.lastrowid
+                connection.execute('UPDATE journalTopics SET ChangeDate=? WHERE ID=?', (now, topic_id))
+            self.get_all_journals_by_topic()
+        return item_id
+
+
 cm_shared = CharacterManager()
 em_shared = EnemyManagement()
 mm_shared = MapManager()
+
+jm_shared = JournalManager()

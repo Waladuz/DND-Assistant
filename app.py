@@ -1,4 +1,5 @@
 import re
+import secrets
 import queue
 from datetime import datetime
 import sqlite3
@@ -134,6 +135,44 @@ class WebsiteControl:
         self.website_window.after(100, self.process_queue)
 
     def setup_routes(self):
+        @self.app.route('/journal', methods=['GET', 'POST'])
+        def journal():
+            if 'user' not in session:
+                return redirect(url_for('login'))
+            if 'journal_token' not in session:
+                session['journal_token'] = secrets.token_hex(32)
+            error = None
+            status = 200
+            open_topic = request.args.get('topic', type=int)
+            if request.method == 'POST':
+                if not secrets.compare_digest(request.form.get('token', ''), session['journal_token']):
+                    error, status = 'This form expired. Refresh the page and try again.', 400
+                else:
+                    try:
+                        if request.form.get('action') == 'topic':
+                            open_topic = DataManagers.jm_shared.create_journal_topic(request.form.get('name', ''))
+                        elif request.form.get('action') == 'entry':
+                            author = None
+                            if request.form.get('attribute') == 'yes':
+                                author = DataManagers.cm_shared.get_dictionary().get(session.get('chara_id'))
+                                if author is None:
+                                    raise ValueError('Your character is unavailable. Sign in again.')
+                            open_topic = request.form.get('topic_id', type=int)
+                            DataManagers.jm_shared.add_journal_item(request.form.get('text', ''), open_topic, author)
+                        else:
+                            raise ValueError('Unknown journal action.')
+                        return redirect(url_for('journal', topic=open_topic), code=303)
+                    except ValueError as exc:
+                        error, status = str(exc), 400
+                    except sqlite3.Error:
+                        self.app.logger.exception('Journal save failed')
+                        error, status = 'Could not save the journal. Please try again.', 503
+            return render_template('journal.html',
+                                   topics=DataManagers.jm_shared.get_all_journals_by_topic(),
+                                   characters=DataManagers.cm_shared.get_dictionary(),
+                                   token=session['journal_token'], error=error,
+                                   open_topic=open_topic), status
+
         @self.app.route("/", methods=["GET", "POST"])
         def login():
             if request.method == "POST":
