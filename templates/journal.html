@@ -12,16 +12,15 @@
         button, .create { background: #007bff; color: white; padding: 10px 16px; border: 0; border-radius: 5px; cursor: pointer; font: inherit; }
         summary { cursor: pointer; padding: 10px 0; font-weight: bold; overflow-wrap: anywhere; }
         .create { display: list-item; width: fit-content; margin: 16px 0 16px 20px; }
-        table { width: 100%; border-collapse: collapse; margin: 24px 0; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; vertical-align: top; }
-        th { background: #f2f2f2; } .date { width: 155px; font-size: .9rem; }
+        .topics { margin: 24px 0; }
+        .topic { padding: 12px 0; border-bottom: 1px solid #ddd; }
         input[type=text], textarea { width: 100%; padding: 10px; margin: 8px 0 12px; border: 1px solid #888; border-radius: 4px; font: inherit; }
         textarea { min-height: 130px; resize: vertical; }
         article { padding: 12px; margin: 12px 0; background: #f4f4f9; border-radius: 4px; }
         .entry-text { white-space: pre-wrap; overflow-wrap: anywhere; }
         .meta { font-size: .85rem; color: #555; } .error { color: #a40000; background: #fff0f0; padding: 12px; }
         .attribution { display: block; margin-bottom: 12px; }
-        @media(max-width: 600px) { main { margin: 0; padding: 12px; } th, td { padding: 8px; } .date { width: 95px; } }
+        @media(max-width: 600px) { main { margin: 0; padding: 12px; } }
     </style>
 </head>
 <body>
@@ -40,12 +39,9 @@
             <button type="submit">Create Topic</button>
         </form>
     </details>
-    <table aria-label="Journal topics">
-        <thead><tr><th scope="col">Topic and entries</th><th scope="col">Last changed</th></tr></thead>
-        <tbody>
+    <section class="topics" aria-label="Journal topics">
         {% for topic in topics %}
-            <tr>
-                <td>
+            <div class="topic">
                     <details {% if topic.ID == open_topic %}open{% endif %}>
                         <summary>{{ topic.Name }} ({{ topic.Items|length }})</summary>
                         <p class="meta">Created {{ topic.CreationDate[:19]|replace('T', ' ') }} UTC</p>
@@ -69,12 +65,9 @@
                             </form>
                         </details>
                     </details>
-                </td>
-                <td class="date">{{ topic.ChangeDate[:19]|replace('T', ' ') }} UTC</td>
-            </tr>
-        {% else %}<tr><td colspan="2">No journal topics yet. Create a topic to start your journal.</td></tr>{% endfor %}
-        </tbody>
-    </table>
+            </div>
+        {% else %}<p>No journal topics yet. Create a topic to start your journal.</p>{% endfor %}
+    </section>
 </main>
 </body>
 </html>
