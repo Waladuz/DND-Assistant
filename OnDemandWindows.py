@@ -866,7 +866,7 @@ class OnDemandWindows:
 
             print(skill)
 
-            label = ttk.Label(base_frame, text=f"{skill["name"]}")
+            label = ttk.Label(base_frame, text=skill["name"])
             label.grid(row=i, column=1, padx=5, pady=5, sticky="w")
 
             ToolTip(label, msg=lambda skill=skill: skill["description"], delay=.2)
