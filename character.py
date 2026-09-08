@@ -438,6 +438,12 @@ class Character:
 
         connection.commit()
 
+    def get_current_total_money(self) -> int:
+        """Return the current inventory's coin value in copper units."""
+        return (self.Inventory.get(188, 0)
+                + self.Inventory.get(189, 0) * 10
+                + self.Inventory.get(190, 0) * 100)
+
     def get_inventory_items_as_dictionary(self):
         items_object_dictionary = {}
 
