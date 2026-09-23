@@ -260,9 +260,10 @@ class BattleScreenManager:
         damage_confirm_frame = ttk.LabelFrame(self.combat_window, text="Confirm", padding=(10, 10))
         damage_confirm_frame.grid(row=2, column=0, padx=10, pady=10, sticky="nsew", columnspan=2)
 
-        confirm_button = ttk.Button(damage_confirm_frame,text="Confirm",
-                                    command= lambda :self.deal_damage_to_entities([self.battle_manager.current_selected_entity, int(entry_damage_attacker.get())],
-                                                                                  [other_entity, int(entry_damage_defender.get())]))
+        confirm_button = ttk.Button(damage_confirm_frame, text="Confirm",
+                                    command=lambda: self.deal_damage_to_entities(
+                                        [self.battle_manager.current_selected_entity, int(entry_damage_attacker.get())],
+                                        [other_entity, int(entry_damage_defender.get())]))
         confirm_button.pack(fill="x", expand=True)
 
     def deal_damage_to_entities(self, attacker_and_damage, defender_and_damage):
@@ -300,7 +301,7 @@ class BattleScreenManager:
             entity.recalculate_arrays()
             attributes = entity.Attributes_Array
             main_values = (entity.Base_Name, "Player", f"{entity.Battle_HP}/{entity.Battle_HP_Max}",
-                      entity.get_current_ac()[0], entity.Base_Speed, "-")
+                           entity.get_current_ac()[0], entity.Base_Speed, "-")
             for weapon in entity.Equipment_Weapons:
                 attack_names.append(weapon.Item_Name)
                 attack_descriptions.append(f"Damage: {weapon.Weapon_Damage}"
@@ -314,7 +315,7 @@ class BattleScreenManager:
             image_path = f"enemy/{entity.Portrait_ID}"
             attributes = entity.get_attributes_array()
             main_values = (entity.Temp_CharaName, "Enemy", f"{entity.Temp_HP}/{entity.Temp_HP_Max}",
-                      entity.Enemy_AC_Base, entity.Enemy_Speed, "-")
+                           entity.Enemy_AC_Base, entity.Enemy_Speed, "-")
 
             for enemy_attack in entity.Battle_Actions:
                 attack_names.append(enemy_attack.name)
@@ -352,7 +353,8 @@ class BattleScreenManager:
             label = ttk.Label(attributes_frame, text=labels[k][:3].upper())
             label.grid(row=a, column=2 * b, padx=5, pady=0, sticky="e")
 
-            entry = ttk.Label(attributes_frame, text=f"{attributes[k]:02} ({get_attribute_modifier(int(attributes[k])):+d})",
+            entry = ttk.Label(attributes_frame,
+                              text=f"{attributes[k]:02} ({get_attribute_modifier(int(attributes[k])):+d})",
                               font=("Helvetica", 10, "bold"))
             entry.grid(row=a, column=2 * b + 1, padx=5, pady=0, sticky="w")
 
@@ -697,7 +699,7 @@ class BattleScreenManager:
         for widget in self.battle_action_frame.winfo_children():
             widget.destroy()
 
-        initiative_dict = self.battle_manager.initiative_to_entity_dictionary
+        initiative_dict = self.battle_manager.initiative_order
 
         label = ttk.Label(self.battle_action_frame, text="Initiative", font=("Helvetica", 10, "bold"))
         label.grid(row=0, column=0, padx=5, pady=0, sticky="e")
@@ -710,7 +712,10 @@ class BattleScreenManager:
 
         i = 1
 
-        for initiative, entity in initiative_dict.items():
+        for element in initiative_dict:
+            entity = element[1]
+            initiative = element[0]
+
             if type(entity) == Character:
                 entity_name = entity.Base_Name
             else:
@@ -823,16 +828,16 @@ class BattleScreenManager:
 
             name = chara
 
-            label_xp_name = ttk.Label(xp_statistic_frame, text=f"{name}", width= 15)
+            label_xp_name = ttk.Label(xp_statistic_frame, text=f"{name}", width=15)
             label_xp_name.grid(row=i, column=0, columnspan=1)
 
-            label_current_xp = ttk.Label(xp_statistic_frame, text=f"{chara_xp[i]}", width= 15)
+            label_current_xp = ttk.Label(xp_statistic_frame, text=f"{chara_xp[i]}", width=15)
             label_current_xp.grid(row=i, column=1, columnspan=1)
 
-            label_arrow_xp = ttk.Label(xp_statistic_frame, text=f"→", width= 15)
+            label_arrow_xp = ttk.Label(xp_statistic_frame, text=f"→", width=15)
             label_arrow_xp.grid(row=i, column=2, columnspan=1)
 
-            label_current_xp = ttk.Label(xp_statistic_frame, text=f"{chara_xp[i] + split_xp}", width= 15)
+            label_current_xp = ttk.Label(xp_statistic_frame, text=f"{chara_xp[i] + split_xp}", width=15)
             label_current_xp.grid(row=i, column=3, columnspan=1)
 
         self.loot_split_frame = ttk.LabelFrame(self.split_loot_window, text="Loot List", padding=(10, 10))
@@ -1024,7 +1029,7 @@ class BattleScreenManager:
         columns = ("ID", "Item Name")
 
         self.item_loot_list = ttk.Treeview(battle_frame, columns=columns, show="headings", height=5,
-                                       style="Custom.Treeview")
+                                           style="Custom.Treeview")
         self.item_loot_list.grid(row=3, column=0, sticky="nswe")
 
         scrollbar = ttk.Scrollbar(battle_frame, orient="vertical", command=self.item_loot_list.yview)
@@ -1040,11 +1045,11 @@ class BattleScreenManager:
             self.item_loot_list.column(col, width=width, anchor="center")
 
         button_add_item = ttk.Button(battle_frame, text="Add Item", padding=(5, 5), width=15,
-                                      command=self.open_add_loot_window)
+                                     command=self.open_add_loot_window)
         button_add_item.grid(row=4, column=0)
 
         button_remove_item = ttk.Button(battle_frame, text="Remove Item", padding=(5, 5), width=15,
-                                         command=self.remove_selected_loot_item)
+                                        command=self.remove_selected_loot_item)
         button_remove_item.grid(row=5, column=0)
 
         file_frame = ttk.LabelFrame(self.action_frame, text="Map", padding=(10, 10))
