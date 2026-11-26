@@ -94,6 +94,7 @@ class CharacterOverview:
         self.frame_to_chara_dict = {}
 
         current_party_ids = cm_shared.get_all_ids_from_available_characters()
+        print(f"ID numbers {current_party_ids}")
         self.current_party_dict = {}
 
         for chara_id in current_party_ids:
@@ -110,8 +111,8 @@ class CharacterOverview:
             mystyle.configure('MyStyle.TLabelframe', borderwidth=4, relief='groove', labelmargins=10)
             mystyle.configure('MyStyle.TLabelframe.Label', font=('Ariel', 13, 'bold'))
 
-            c = i % 2
-            d = i // 2
+            c = i
+            d = 0
 
             chara_frame = ttk.LabelFrame(self.base_frame, text=f"{i + 1}", padding=(0, 0))
             chara_frame.grid(row=d, column=c, padx=10, pady=0, sticky="nsew")

@@ -19,8 +19,18 @@ class CharacterManager:
     def refresh_available_character_list(self):
         connection = sqlite3.connect('assets.db')
         cursor = connection.cursor()
+
         cursor.execute("SELECT id FROM character")
         rows = cursor.fetchall()
+
+        cursor.execute("SELECT id, base_name FROM character")
+
+        rows = cursor.fetchall()
+
+        print("Number of rows:", len(rows))
+
+        for row in rows:
+            print(row)
 
         ids = [row[0] for row in rows]
 

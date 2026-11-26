@@ -79,6 +79,8 @@ class Character:
         self.Lore_Flaws = self.data[45]
 
         self.Portrait_ID = self.data[48]
+        print(f"portrait ID: {self.Portrait_ID} - {self.Base_Name} - {len(self.data)}")
+
         self.Level_Up_Notes = self.data[49]
 
         self.Battle_HP = self.data[50]
@@ -175,7 +177,10 @@ class Character:
         override = self.get_mp_override()
         if override is not None:
             return override
-        values = shared_data.MP_BY_CLASS.get(self.Base_Class, {}).get(int(self.Base_Level), [])
+        if self.Base_Class in shared_data.MP_BY_CLASS:
+            values = shared_data.MP_BY_CLASS.get(self.Base_Class, {}).get(int(self.Base_Level), [])
+        else:
+            values = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         return (list(values) + [0] * 9)[:9]
 
     def refresh_magic_point_limits(self):

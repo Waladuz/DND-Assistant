@@ -22,14 +22,16 @@ ACCOUNTS = {
     "Tobi": "cockblocker",
     "Nik": "sahnefurz",
     "Nadir": "werwer",
-    "Dominik": "bossmang"
+    "Dominik": "bossmang",
+    "Helena": "lala"
 }
 
 IDS = {
     "Dominik": 4,
     "Nadir": 1,
     "Tobi": 2,
-    "Nik": 3
+    "Nik": 3,
+    "Helena": 5
 }
 
 
